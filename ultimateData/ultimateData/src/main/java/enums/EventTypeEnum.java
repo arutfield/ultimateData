@@ -1,0 +1,38 @@
+package enums;
+
+public enum EventTypeEnum {
+	StartDPoint,
+	StartOPoint,
+	MidpointTimeoutRecordingTeam,
+	Unused0,
+	MidpointTimeoutOpposingTeam,
+	Unused1,
+	PullInBounds,
+	PullOutofBounds,
+	OffsidesRecordingTeam,
+	OffsidesOpposingTeam,
+	Block,
+	Callahan,
+	ThrowawayByOpposingTeam,
+	StallAgainstOpposingTeam,
+	ScoreByOpposingTeam,
+	PenaltyOnRecordingTeam,
+	PenaltyOnOpposingTeam,
+	Pass,
+	Goal,
+	Drop,
+	Unused2,
+	ThrowawayByRecordingTeam,
+	CallahanThrownByRecordingTeam,
+	StallAgainstRecordingTeam,
+	Injury,
+	Unused3,
+	Unused4,
+	EndofFirstQuarter,
+	EndofSecondQuarter,
+	EndofThirdQuarter,
+	EndofFourthQuarter,
+	EndofFirstOvertime,
+	EndofSecondOvertime
+	
+}
