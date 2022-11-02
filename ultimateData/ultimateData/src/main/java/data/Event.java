@@ -17,7 +17,6 @@ public class Event {
 		}
 	}
 	
-	private final String gameID;
 	private final gameTeam awayTeam;
 	private final gameTeam homeTeam;
 	private final EventTypeEnum eventType;
@@ -42,7 +41,7 @@ public class Event {
 	private short index;
 	
 	
-	public Event(String gameID, String awayTeam, String homeTeam, String recordingTeam,
+	public Event(String awayTeam, String homeTeam, String recordingTeam,
 			String offenseTeam, String defenseTeam, boolean isHomeOffense, EventTypeEnum eventType,
 			byte pointNumber, byte possessionNumber, byte throwInPossession, byte homeTeamScore,
 			byte awayTeamScore, QuarterEnum quarter, int quarterTime, String[] players,
@@ -50,7 +49,6 @@ public class Event {
 			Coordinate throwerCoordinates, Coordinate receiverCoordinates,
 			Coordinate throwDistance, String defender, Coordinate turnoverCoordinates, short index)
 	{
-		this.gameID = gameID;
 		this.awayTeam = new gameTeam(awayTeam, true, (recordingTeam == awayTeam), (offenseTeam == awayTeam));
 		this.homeTeam = new gameTeam(homeTeam, true, (recordingTeam == homeTeam), (offenseTeam == homeTeam));
 		this.isHomeOffense = isHomeOffense; //=2 if home is offense
@@ -75,10 +73,6 @@ public class Event {
 		this.setIndex(index);
 	}
 
-
-	public String getGameID() {
-		return gameID;
-	}
 
 	public gameTeam getAwayTeam() {
 		return awayTeam;

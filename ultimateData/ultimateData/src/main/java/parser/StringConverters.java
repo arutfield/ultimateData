@@ -75,28 +75,28 @@ public class StringConverters {
 			pullCoordinates = new Coordinate(Double.valueOf(values[GameEventEnum.pullX.value]),
 					Double.valueOf(values[GameEventEnum.pullY.value]));
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for finding pull coordinates: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for finding pull coordinates: " + ex.getMessage());
 		}
 		Coordinate throwerCoordinates = null;
 		try {
 			throwerCoordinates = new Coordinate(Double.valueOf(values[GameEventEnum.throwerX.value]),
 					Double.valueOf(values[GameEventEnum.throwerY.value]));
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for finding thrower coordinates: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for finding thrower coordinates: " + ex.getMessage());
 		}
 		Coordinate receiverCoordinates = null;
 		try {
 			receiverCoordinates = new Coordinate(Double.valueOf(values[GameEventEnum.receiverX.value]),
 					Double.valueOf(values[GameEventEnum.receiverY.value]));
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for finding receiver coordinates: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for finding receiver coordinates: " + ex.getMessage());
 		}
 		Coordinate throwDistance = null;
 		try {
 			throwDistance = new Coordinate(Double.valueOf(values[GameEventEnum.throwXDistance.value]),
 					Double.valueOf(values[GameEventEnum.throwYDistance.value]));
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for finding throw distance: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for finding throw distance: " + ex.getMessage());
 		}		
 		
 		
@@ -105,17 +105,17 @@ public class StringConverters {
 			turnoverCoordinates = new Coordinate(Double.valueOf(values[GameEventEnum.turnoverX.value]),
 					Double.valueOf(values[GameEventEnum.turnoverY.value]));
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for finding turnover coordinates: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for finding turnover coordinates: " + ex.getMessage());
 		}
 		
 		int pullMs = Integer.MIN_VALUE;
 		try {
 			pullMs = Integer.parseInt(values[GameEventEnum.pullMs.value]);
 		} catch (NumberFormatException ex) {
-			logger.warn("NumberFormat Exception for pull Ms: " + ex.getMessage());
+			logger.debug("NumberFormat Exception for pull Ms: " + ex.getMessage());
 		}
 
-		return new Event(values[GameEventEnum.gameID.value], values[GameEventEnum.awayTeam.value], values[GameEventEnum.homeTeam.value],
+		return new Event(values[GameEventEnum.awayTeam.value], values[GameEventEnum.homeTeam.value],
 				values[GameEventEnum.recordingTeam.value], values[GameEventEnum.offenseTeam.value], values[GameEventEnum.defenseTeam.value],
 				values[GameEventEnum.offense.value] == "1", EventTypeEnum.convertFromString(values[GameEventEnum.eventType.value]),
 				Byte.parseByte(values[GameEventEnum.pointNumber.value]), Byte.parseByte(values[GameEventEnum.possessionNumber.value]),
