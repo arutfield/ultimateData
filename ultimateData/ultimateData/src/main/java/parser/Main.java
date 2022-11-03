@@ -12,9 +12,12 @@ import org.apache.logging.log4j.Logger;
 
 import data.Event;
 import data.Game;
+import data.Player;
+import data.PlayerGame;
 import exceptions.BadEnumException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters.GameEventEnum;
+import parser.StringConverters.PlayerGameEnum;
 
 
 public class Main {	
@@ -55,6 +58,44 @@ public class Main {
     	for (Game game : gameRecords) {
     		logger.info("game " + game.getId() + " had " + game.getEvents().size() + " events");
     	}
+    	
+    	
+    	boolean seenHeaderLinePlayer = false;
+    	LinkedList<Player> playerRecords = new LinkedList<>();
+    	try (BufferedReader br = new BufferedReader(new FileReader("../playergamestatsADV.csv"))) {
+    	    String line;
+    	    String lastId = null;
+    	    Player player = null;
+        	while ((line = br.readLine()) != null) {
+    	    	if (!seenHeaderLinePlayer) {
+    	    		seenHeaderLinePlayer = true;
+    	    		continue;
+    	    	}
+    	        String[] values = line.split(",");
+    	        String playerId = values[PlayerGameEnum.playerId.getValue()];    	        
+    	        if (!playerId.equals(lastId)) {
+    	        		if (player != null) {
+    	        			playerRecords.add(player);
+    	        		}
+    	        		boolean playerFound = false;
+    	        		for (Player recordedPlayer : playerRecords) {
+    	        			if (recordedPlayer.getPlayerId().equals(playerId)) {
+    	        				player = recordedPlayer;
+    	        				playerFound = true;
+    	        			}
+    	        		}
+    	        		if (!playerFound)
+    	        			player = new Player(playerId);
+    	        		lastId = playerId;
+    	        }
+    	        logger.debug(line);
+				player.addEvent(StringConverters.convertToPlayerGame(values));
+    	    }
+    	}
+    	for (Player player : playerRecords) {
+    		logger.info("player " + player.getPlayerId() + " had " + player.getPlayerGameList().size() + " games");
+    	}
+    	
     }
 
 
