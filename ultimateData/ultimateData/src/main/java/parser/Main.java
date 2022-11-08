@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.text.ParseException;
 import java.util.LinkedList;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import data.Event;
 import data.Game;
+import data.GameDetails;
 import data.Player;
 import data.PlayerGame;
 import exceptions.BadEnumException;
@@ -22,7 +24,7 @@ import parser.StringConverters.PlayerGameEnum;
 
 public class Main {	
     private static final Logger logger = LogManager.getLogger(Main.class);
-    public static void main(String[] args) throws IOException, WrongSizeRowException, BadEnumException {
+    public static void main(String[] args) throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException {
     	boolean seenHeaderLine = false;
     	LinkedList<Game> gameRecords = new LinkedList<>();
     	try (BufferedReader br = new BufferedReader(new FileReader("../AUDLGameEvents.csv"))) {
@@ -95,6 +97,44 @@ public class Main {
     	for (Player player : playerRecords) {
     		logger.info("player " + player.getPlayerId() + " had " + player.getPlayerGameList().size() + " games");
     	}
+    
+    	
+    	try (BufferedReader br = new BufferedReader(new FileReader("../games.csv"))) {
+    	    String line;
+    	    String lastId = null;
+    	    Game game = null;
+    	    seenHeaderLine = false;
+    	    logger.info("game records length " + gameRecords.size());
+        	while ((line = br.readLine()) != null) {
+    	    	if (!seenHeaderLine) {
+    	    		seenHeaderLine = true;
+    	    		continue;
+    	    	}
+    	        String[] values = line.split(",");
+    	        GameDetails gameDetails = StringConverters.convertToGameDetails(values);
+    	        String gameId = values[GameEventEnum.gameID.getValue()];
+    	        //see if it already exists
+    	        boolean gameFound = false;
+    	        for (Game recordedGame : gameRecords) {
+    	        	if (recordedGame.getId().equals(gameId)) {
+    	        		gameFound = true;
+    	        		//logger.info("found game already");
+    	        		recordedGame.addDetails(gameDetails);
+    	        		break;
+    	        	}
+    	        }
+    	        if (!gameFound) {
+    	        	//logger.info("setting up new game");
+    	        	Game newGame = new Game(gameId);
+    	        	newGame.addDetails(gameDetails);
+    	        	gameRecords.add(newGame);
+    	        }
+    	        logger.debug(line);
+    	    }
+    	}
+    	logger.info("found " + gameRecords.size() + " games total");
+    	
+    	
     	
     }
 

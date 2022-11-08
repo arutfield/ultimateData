@@ -1,10 +1,16 @@
 package parser;
 
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import data.Coordinate;
 import data.Event;
+import data.GameDetails;
 import data.PlayerGame;
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
@@ -55,6 +61,7 @@ public class StringConverters {
 
 	static final int gameEventLength = 40;
 	static final int playerGameLength = 42;
+	static final short gameDetailLength = 7;
 
 	static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException {
 		if (values.length != gameEventLength)
@@ -175,5 +182,52 @@ public class StringConverters {
 				Short.valueOf(values[PlayerGameEnum.assistsTotal.value]),
 				Short.valueOf(values[PlayerGameEnum.scoringResultsParticipated.value]), throwYardsPerAttempt,
 				yardsPerReception);
+	}
+
+	enum GameDetailEnum {
+		gameID(0), awayTeam(1), homeTeam(2), awayScore(3), homeScore(4), time(5), week(6);
+
+		private GameDetailEnum(int value) {
+			this.value = value;
+		}
+
+		private final int value;
+
+		int getValue() {
+			return value;
+		}
+
+	}
+
+	public static GameDetails convertToGameDetails(String[] values)
+			throws WrongSizeRowException, NumberFormatException, ParseException {
+		if (values.length != gameDetailLength)
+			throw new WrongSizeRowException(gameDetailLength, values.length);
+		return new GameDetails(values[GameDetailEnum.awayTeam.value],
+				values[GameDetailEnum.homeTeam.value], Short.valueOf(values[GameDetailEnum.awayScore.value]),
+				Short.valueOf(values[GameDetailEnum.homeScore.value]),
+				parseStartTime(values[GameDetailEnum.time.value]), parseWeek(values[GameDetailEnum.week.value]));
+	}
+
+	private static long parseStartTime(String startTime) throws ParseException {
+		String removeT = startTime.replace('T', ' ');
+		String cutTimeZone = removeT.substring(0, removeT.length()-6);
+		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date actualDate = (Date) sdfDate.parse(cutTimeZone);
+		String[] splitBySpace = cutTimeZone.split(" ", 2);
+		Date startOfDate = (Date) sdfDate.parse(splitBySpace[0] + " 00:00:00");
+		return actualDate.getTime() - startOfDate.getTime();
+	}
+
+	private static short parseWeek(String weekString) {
+		try {
+			return Short.parseShort(weekString);
+		} catch (NumberFormatException ex) {
+			if (weekString.equals("playoffs"))
+				return 18;
+			if (weekString.equals("championship-weekend"))
+				return 19;
+		}
+		throw new NumberFormatException("Unknown value");
 	}
 }
