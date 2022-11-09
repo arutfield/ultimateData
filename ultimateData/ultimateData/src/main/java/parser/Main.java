@@ -16,6 +16,7 @@ import data.Game;
 import data.GameDetails;
 import data.Player;
 import data.PlayerGame;
+import data.PlayerSeason;
 import exceptions.BadEnumException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters.GameEventEnum;
@@ -91,18 +92,12 @@ public class Main {
     	        		lastId = playerId;
     	        }
     	        logger.debug(line);
-				player.addEvent(StringConverters.convertToPlayerGame(values));
+				player.addGame(StringConverters.convertToPlayerGame(values));
     	    }
     	}
-    	for (Player player : playerRecords) {
-    		logger.info("player " + player.getPlayerId() + " had " + player.getPlayerGameList().size() + " games");
-    	}
-    
     	
     	try (BufferedReader br = new BufferedReader(new FileReader("../games.csv"))) {
     	    String line;
-    	    String lastId = null;
-    	    Game game = null;
     	    seenHeaderLine = false;
     	    logger.info("game records length " + gameRecords.size());
         	while ((line = br.readLine()) != null) {
@@ -118,13 +113,11 @@ public class Main {
     	        for (Game recordedGame : gameRecords) {
     	        	if (recordedGame.getId().equals(gameId)) {
     	        		gameFound = true;
-    	        		//logger.info("found game already");
     	        		recordedGame.addDetails(gameDetails);
     	        		break;
     	        	}
     	        }
     	        if (!gameFound) {
-    	        	//logger.info("setting up new game");
     	        	Game newGame = new Game(gameId);
     	        	newGame.addDetails(gameDetails);
     	        	gameRecords.add(newGame);
@@ -134,7 +127,37 @@ public class Main {
     	}
     	logger.info("found " + gameRecords.size() + " games total");
     	
-    	
+    	try (BufferedReader br = new BufferedReader(new FileReader("../playerseasonstats.csv"))) {
+    	    String line;
+    	    seenHeaderLine = false;
+    	    logger.info("game records length " + gameRecords.size());
+        	while ((line = br.readLine()) != null) {
+    	    	if (!seenHeaderLine) {
+    	    		seenHeaderLine = true;
+    	    		continue;
+    	    	}
+    	        String[] values = line.split(",");
+    	        PlayerSeason playerSeason = StringConverters.convertToPlayerSeason(values);
+    	        String playerId = values[PlayerGameEnum.playerId.getValue()];
+    	        //see if it already exists
+    	        boolean playerFound = false;
+    	        for (Player recordedPlayer : playerRecords) {
+    	        	if (recordedPlayer.getPlayerId().equals(playerId)) {
+    	        		playerFound = true;
+    	        		recordedPlayer.addSeason(playerSeason);
+    	        		break;
+    	        	}
+    	        }
+    	        if (!playerFound) {
+    	        	Player newPlayer = new Player(playerId);
+    	        	newPlayer.addSeason(playerSeason);
+	        		//logger.info("new player " + playerId);
+    	        	playerRecords.add(newPlayer);
+    	        }
+    	        logger.debug(line);
+    	    }
+    	}
+	
     	
     }
 

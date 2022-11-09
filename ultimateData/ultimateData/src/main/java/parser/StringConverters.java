@@ -12,6 +12,7 @@ import data.Coordinate;
 import data.Event;
 import data.GameDetails;
 import data.PlayerGame;
+import data.PlayerSeason;
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
 import exceptions.BadEnumException;
@@ -230,4 +231,61 @@ public class StringConverters {
 		}
 		throw new NumberFormatException("Unknown value");
 	}
+	
+	enum PlayerSeasonEnum {
+		year(0), playerID(1), teamID(4), games(5), assists(6), goals(7),
+		hockeyAssists(8), completions(9), throwAttempts(10), throwaways(11),
+		stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15),
+		hucksAttempted(16), hucksCompleted(17), catches(18), drops(19),
+		blocks(20), callahans(21), pulls(22), obPulls(23), recordedPulls(24),
+		recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27),
+		dPointsPlayed(28), dPointsScored(29), secondsPlayed(30), oOpportunities(31),
+		oOpportunityScores(32), dOpportunities(33), dOpportunityStops(34);
+
+		private PlayerSeasonEnum(int value) {
+			this.value = value;
+		}
+
+		private final int value;
+
+		int getValue() {
+			return value;
+		}
+	}
+
+	public static PlayerSeason convertToPlayerSeason(String[] values) {
+		return new PlayerSeason(Short.parseShort(values[PlayerSeasonEnum.year.value]),
+				values[PlayerSeasonEnum.teamID.value],
+				Short.parseShort(values[PlayerSeasonEnum.games.value]),
+				Short.parseShort(values[PlayerSeasonEnum.assists.value]),
+				Short.parseShort(values[PlayerSeasonEnum.goals.value]),
+				Short.parseShort(values[PlayerSeasonEnum.hockeyAssists.value]),
+				Short.parseShort(values[PlayerSeasonEnum.completions.value]),
+				Short.parseShort(values[PlayerSeasonEnum.throwAttempts.value]),
+				Short.parseShort(values[PlayerSeasonEnum.throwaways.value]),
+				Short.parseShort(values[PlayerSeasonEnum.stalls.value]),
+				Short.parseShort(values[PlayerSeasonEnum.callahansThrown.value]),
+				Short.parseShort(values[PlayerSeasonEnum.yardsReceived.value]),
+				Short.parseShort(values[PlayerSeasonEnum.yardsThrown.value]),
+				Short.parseShort(values[PlayerSeasonEnum.hucksAttempted.value]),
+				Short.parseShort(values[PlayerSeasonEnum.hucksCompleted.value]),
+				Short.parseShort(values[PlayerSeasonEnum.catches.value]),
+				Short.parseShort(values[PlayerSeasonEnum.drops.value]),
+				Short.parseShort(values[PlayerSeasonEnum.blocks.value]),
+				Short.parseShort(values[PlayerSeasonEnum.callahans.value]),
+				Short.parseShort(values[PlayerSeasonEnum.pulls.value]),
+				Short.parseShort(values[PlayerSeasonEnum.obPulls.value]),
+				Short.parseShort(values[PlayerSeasonEnum.recordedPulls.value]),
+				Integer.parseInt(values[PlayerSeasonEnum.recordedPullsHangtime.value]),
+				Short.parseShort(values[PlayerSeasonEnum.oPointsPlayed.value]),
+				Short.parseShort(values[PlayerSeasonEnum.oPointsScored.value]),
+				Short.parseShort(values[PlayerSeasonEnum.dPointsPlayed.value]),
+				Short.parseShort(values[PlayerSeasonEnum.dPointsScored.value]),
+				Short.parseShort(values[PlayerSeasonEnum.secondsPlayed.value]),
+				Short.parseShort(values[PlayerSeasonEnum.oOpportunities.value]),
+				Short.parseShort(values[PlayerSeasonEnum.oOpportunityScores.value]),
+				Short.parseShort(values[PlayerSeasonEnum.dOpportunities.value]),
+				Short.parseShort(values[PlayerSeasonEnum.dOpportunityStops.value]));
+	}
 }
+

@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 public class Player {
 	private final LinkedList<PlayerGame> playerGameList;
+	private final LinkedList<PlayerSeason> playerSeasonList;
 	private final String playerId;
 	private short assists;
 	private short goals;
@@ -47,6 +48,7 @@ public class Player {
 	public Player(String playerId) {
 		this.playerId = playerId;
 		this.playerGameList = new LinkedList<>();
+		this.playerSeasonList = new LinkedList<>();
 		
 	}
 	
@@ -59,8 +61,12 @@ public class Player {
 		return playerGameList;
 	}
 	
-	public void addEvent(PlayerGame event) {
+	public void addGame(PlayerGame event) {
 		playerGameList.add(event);
+	}
+	
+	public void addSeason(PlayerSeason season) {
+		playerSeasonList.add(season);
 	}
 	
 	public void calculateStats() {
