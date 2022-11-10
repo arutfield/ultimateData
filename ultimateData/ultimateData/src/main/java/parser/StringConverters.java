@@ -13,6 +13,7 @@ import data.Event;
 import data.GameDetails;
 import data.PlayerGame;
 import data.PlayerSeason;
+import data.TeamStats;
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
 import exceptions.BadEnumException;
@@ -286,6 +287,30 @@ public class StringConverters {
 				Short.parseShort(values[PlayerSeasonEnum.oOpportunityScores.value]),
 				Short.parseShort(values[PlayerSeasonEnum.dOpportunities.value]),
 				Short.parseShort(values[PlayerSeasonEnum.dOpportunityStops.value]));
+	}
+	
+	enum TeamStatsEnum {
+		teamId(1), year(2), divisionId(3), wins(8), losses(9), ties(10), divStanding(11);
+
+		private TeamStatsEnum(int value) {
+			this.value = value;
+		}
+
+		private final int value;
+
+		int getValue() {
+			return value;
+		}
+	}
+
+	
+
+	public static TeamStats convertToTeamStats(String[] values) {
+		return new TeamStats(Short.valueOf(values[TeamStatsEnum.year.value]),
+				values[TeamStatsEnum.divisionId.value], Short.valueOf(values[TeamStatsEnum.wins.value]),
+						Short.valueOf(values[TeamStatsEnum.losses.value]),
+						Short.valueOf(values[TeamStatsEnum.ties.value]),
+						Short.valueOf(values[TeamStatsEnum.divStanding.value]));
 	}
 }
 

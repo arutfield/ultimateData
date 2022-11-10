@@ -17,10 +17,13 @@ import data.GameDetails;
 import data.Player;
 import data.PlayerGame;
 import data.PlayerSeason;
+import data.Team;
+import data.TeamStats;
 import exceptions.BadEnumException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters.GameEventEnum;
 import parser.StringConverters.PlayerGameEnum;
+import parser.StringConverters.TeamStatsEnum;
 
 
 public class Main {	
@@ -151,13 +154,45 @@ public class Main {
     	        if (!playerFound) {
     	        	Player newPlayer = new Player(playerId);
     	        	newPlayer.addSeason(playerSeason);
-	        		//logger.info("new player " + playerId);
     	        	playerRecords.add(newPlayer);
     	        }
     	        logger.debug(line);
     	    }
     	}
-	
+
+    	LinkedList<Team> teamRecords = new LinkedList<>();
+    	//add teams
+    	try (BufferedReader br = new BufferedReader(new FileReader("../teamStats.csv"))) {
+    	    String line;
+    	    seenHeaderLine = false;
+        	while ((line = br.readLine()) != null) {
+    	    	if (!seenHeaderLine) {
+    	    		seenHeaderLine = true;
+    	    		continue;
+    	    	}
+    	        String[] values = line.split(",");
+    	        TeamStats teamStats = StringConverters.convertToTeamStats(values);
+    	        String teamId = values[TeamStatsEnum.teamId.getValue()];
+    	        //see if it already exists
+    	        boolean teamFound = false;
+    	        for (Team recordedTeam : teamRecords) {
+    	        	if (recordedTeam.getTeamId().equals(teamId)) {
+    	        		teamFound = true;
+    	        		recordedTeam.addTeamStats(teamStats);
+    	        		break;
+    	        	}
+    	        }
+    	        if (!teamFound) {
+    	        	Team newTeam = new Team(teamId);
+    	        	newTeam.addTeamStats(teamStats);
+    	        	teamRecords.add(newTeam);
+    	        }
+    	        logger.debug(line);
+    	    }
+    	}
+    	for (Team team : teamRecords) {
+    		logger.info("Found team " + team.getTeamId() + " with " + team.getTeamStats().size() + " seasons");
+    	}
     	
     }
 
