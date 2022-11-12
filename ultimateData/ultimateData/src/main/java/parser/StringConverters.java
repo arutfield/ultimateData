@@ -22,7 +22,7 @@ import exceptions.WrongSizeRowException;
 public class StringConverters {
 	private static final Logger logger = LogManager.getLogger(StringConverters.class);
 
-	enum GameEventEnum {
+	public enum GameEventEnum {
 		gameID(0), awayTeam(1), homeTeam(2), recordingTeam(3), offenseTeam(4), defenseTeam(5), offense(6), eventType(7),
 		pointNumber(9), possessionNumber(10), throwInPossession(11), homeTeamScore(12), awayTeamScore(13), quarter(14),
 		quarterTime(15), player1(16), player2(17), player3(18), player4(19), player5(20), player6(21), player7(22),
@@ -36,19 +36,19 @@ public class StringConverters {
 
 		private final int value;
 
-		int getValue() {
+		public int getValue() {
 			return value;
 		}
 	}
 
-	enum PlayerGameEnum {
-		gameID(0), playerId(1), assists(5), goals(6), hockeyAssists(7), completions(8), throwAttempts(9),
-		throwaways(10), stalls(11), callahansThrown(12), yardsReceived(13), yardsThrown(14), hucksAttempted(15),
-		hucksCompleted(16), catches(17), drops(18), blocks(19), callahans(20), pulls(21), obPulls(22),
-		recordedPulls(23), recordedPullsHangtime(24), oPointsPlayed(25), oPointsScored(26), dPointsPlayed(27),
-		dPointsScored(28), secondsPlayed(29), oOpportunities(30), oOpportunityScores(31), dOpportunities(32),
-		dOpportunityStops(33), completionPercentage(34), throwawayPercentage(35), hucksPercentage(36), totalYards(37),
-		assistsTotal(38), scoringResultsParticipated(39), throwYardsPerAttempt(40), yardsPerReception(41);
+	public enum PlayerGameEnum {
+		gameID(0), playerId(1), jerseyNumber(4), assists(6), goals(7), hockeyAssists(8), completions(9), throwAttempts(10),
+		throwaways(11), stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15), hucksAttempted(16),
+		hucksCompleted(17), catches(18), drops(19), blocks(20), callahans(21), pulls(22), obPulls(23),
+		recordedPulls(24), recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27), dPointsPlayed(28),
+		dPointsScored(29), secondsPlayed(30), oOpportunities(31), oOpportunityScores(32), dOpportunities(33),
+		dOpportunityStops(34), completionPercentage(35), throwawayPercentage(36), hucksPercentage(37), totalYards(38),
+		assistsTotal(39), scoringResultsParticipated(40), throwYardsPerAttempt(41), yardsPerReception(42);
 
 		private final int value;
 
@@ -56,16 +56,16 @@ public class StringConverters {
 			this.value = value;
 		}
 
-		int getValue() {
+		public int getValue() {
 			return value;
 		}
 	}
 
 	static final int gameEventLength = 40;
-	static final int playerGameLength = 42;
+	static final int playerGameLength = 43;
 	static final short gameDetailLength = 7;
 
-	static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException {
+	public static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException {
 		if (values.length != gameEventLength)
 			throw new WrongSizeRowException(gameEventLength, values.length);
 		String[] players = new String[] { values[GameEventEnum.player1.value], values[GameEventEnum.player2.value],
@@ -132,7 +132,7 @@ public class StringConverters {
 				Short.valueOf(values[GameEventEnum.index.value]));
 	}
 
-	static PlayerGame convertToPlayerGame(String[] values) throws WrongSizeRowException, BadEnumException {
+	public static PlayerGame convertToPlayerGame(String[] values) throws WrongSizeRowException, BadEnumException {
 		if (values.length != playerGameLength)
 			throw new WrongSizeRowException(gameEventLength, values.length);
 
@@ -150,7 +150,8 @@ public class StringConverters {
 			logger.debug("NumberFormat Exception for yards per reception: " + ex.getMessage());
 		}
 
-		return new PlayerGame(values[PlayerGameEnum.gameID.value], Short.valueOf(values[PlayerGameEnum.assists.value]),
+		return new PlayerGame(values[PlayerGameEnum.gameID.value],
+				Short.valueOf(values[PlayerGameEnum.assists.value]),
 				Short.valueOf(values[PlayerGameEnum.goals.value]),
 				Short.valueOf(values[PlayerGameEnum.hockeyAssists.value]),
 				Short.valueOf(values[PlayerGameEnum.completions.value]),
@@ -289,7 +290,7 @@ public class StringConverters {
 				Short.parseShort(values[PlayerSeasonEnum.dOpportunityStops.value]));
 	}
 	
-	enum TeamStatsEnum {
+	public enum TeamStatsEnum {
 		teamId(1), year(2), divisionId(3), wins(8), losses(9), ties(10), divStanding(11);
 
 		private TeamStatsEnum(int value) {
@@ -298,7 +299,7 @@ public class StringConverters {
 
 		private final int value;
 
-		int getValue() {
+		public int getValue() {
 			return value;
 		}
 	}
