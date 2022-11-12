@@ -3,6 +3,7 @@ package data;
 public class PlayerGame {
 
 	private final String gameId;
+	private final short jerseyNumber;
 	private final short assists;
 	private final short goals;
 	private final short hockeyAssists;
@@ -41,7 +42,7 @@ public class PlayerGame {
 	private final double throwYardsPerAttempt;
 	private final double yardsPerReception;
 
-	public PlayerGame(String gameId, short assists, short goals, short hockeyAssists, short completions,
+	public PlayerGame(String gameId, short jerseyNumber, short assists, short goals, short hockeyAssists, short completions,
 			short throwAttempts, short throwaways, short stalls, short callahansThrown, short yardsReceived,
 			short yardsThrown, short hucksAttempted, short hucksCompleted, short catches, short drops, short blocks,
 			short callahans, short pulls, short obPulls, short recordedPulls, int recordedPullsHangtime,
@@ -51,6 +52,7 @@ public class PlayerGame {
 			short assistsTotal, short scoringResultsParticipated, double throwYardsPerAttempt,
 			double yardsPerReception) {
 		this.gameId = gameId;
+		this.jerseyNumber = jerseyNumber;
 		this.assists = assists;
 		this.goals = goals;
 		this.hockeyAssists = hockeyAssists;
@@ -92,6 +94,10 @@ public class PlayerGame {
 
 	public String getGameId() {
 		return gameId;
+	}
+	
+	public short getJerseyNumber() {
+		return jerseyNumber;
 	}
 
 	public short getAssists() {

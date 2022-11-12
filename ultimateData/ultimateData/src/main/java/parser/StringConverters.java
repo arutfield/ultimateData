@@ -149,8 +149,12 @@ public class StringConverters {
 		} catch (NumberFormatException ex) {
 			logger.debug("NumberFormat Exception for yards per reception: " + ex.getMessage());
 		}
+		
+		short jerseyNumber = Short.MIN_VALUE;
+		if (!values[PlayerGameEnum.jerseyNumber.value].equals(""))
+			jerseyNumber = Short.parseShort(values[PlayerGameEnum.jerseyNumber.value]);
 
-		return new PlayerGame(values[PlayerGameEnum.gameID.value],
+		return new PlayerGame(values[PlayerGameEnum.gameID.value], jerseyNumber,
 				Short.valueOf(values[PlayerGameEnum.assists.value]),
 				Short.valueOf(values[PlayerGameEnum.goals.value]),
 				Short.valueOf(values[PlayerGameEnum.hockeyAssists.value]),
