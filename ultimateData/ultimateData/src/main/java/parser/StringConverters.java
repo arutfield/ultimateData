@@ -1,9 +1,10 @@
 package parser;
 
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,11 +12,35 @@ import org.apache.logging.log4j.Logger;
 import data.Coordinate;
 import data.Event;
 import data.GameDetails;
+import data.Player;
 import data.PlayerGame;
 import data.PlayerSeason;
+import data.Records;
 import data.TeamStats;
+import data.raw.RawData;
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
+import enums.RawDataEnums;
+import enums.RawDataEnums.BlockType;
+import enums.RawDataEnums.BrokeMark;
+import enums.RawDataEnums.ClosestDefenderTight;
+import enums.RawDataEnums.DefenderDistance;
+import enums.RawDataEnums.DefenseScheme;
+import enums.RawDataEnums.EventType;
+import enums.RawDataEnums.FieldType;
+import enums.RawDataEnums.Force;
+import enums.RawDataEnums.ForceDirection;
+import enums.RawDataEnums.FoulSide;
+import enums.RawDataEnums.HomeTeamOutcome;
+import enums.RawDataEnums.OffenseDirection;
+import enums.RawDataEnums.PassBreak;
+import enums.RawDataEnums.PassType;
+import enums.RawDataEnums.PullInfo;
+import enums.RawDataEnums.QGroupTimeRemaining;
+import enums.RawDataEnums.TeamScored;
+import enums.RawDataEnums.ThrowDirectionEnum;
+import enums.RawDataEnums.TurnoverType;
+import enums.RawDataEnums.YesNoNA;
 import exceptions.BadEnumException;
 import exceptions.WrongSizeRowException;
 
@@ -42,13 +67,14 @@ public class StringConverters {
 	}
 
 	public enum PlayerGameEnum {
-		gameID(0), playerId(1), jerseyNumber(4), assists(6), goals(7), hockeyAssists(8), completions(9), throwAttempts(10),
-		throwaways(11), stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15), hucksAttempted(16),
-		hucksCompleted(17), catches(18), drops(19), blocks(20), callahans(21), pulls(22), obPulls(23),
-		recordedPulls(24), recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27), dPointsPlayed(28),
-		dPointsScored(29), secondsPlayed(30), oOpportunities(31), oOpportunityScores(32), dOpportunities(33),
-		dOpportunityStops(34), completionPercentage(35), throwawayPercentage(36), hucksPercentage(37), totalYards(38),
-		assistsTotal(39), scoringResultsParticipated(40), throwYardsPerAttempt(41), yardsPerReception(42);
+		gameID(0), playerId(1), jerseyNumber(4), assists(6), goals(7), hockeyAssists(8), completions(9),
+		throwAttempts(10), throwaways(11), stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15),
+		hucksAttempted(16), hucksCompleted(17), catches(18), drops(19), blocks(20), callahans(21), pulls(22),
+		obPulls(23), recordedPulls(24), recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27),
+		dPointsPlayed(28), dPointsScored(29), secondsPlayed(30), oOpportunities(31), oOpportunityScores(32),
+		dOpportunities(33), dOpportunityStops(34), completionPercentage(35), throwawayPercentage(36),
+		hucksPercentage(37), totalYards(38), assistsTotal(39), scoringResultsParticipated(40), throwYardsPerAttempt(41),
+		yardsPerReception(42);
 
 		private final int value;
 
@@ -149,14 +175,13 @@ public class StringConverters {
 		} catch (NumberFormatException ex) {
 			logger.debug("NumberFormat Exception for yards per reception: " + ex.getMessage());
 		}
-		
+
 		short jerseyNumber = Short.MIN_VALUE;
 		if (!values[PlayerGameEnum.jerseyNumber.value].equals(""))
 			jerseyNumber = Short.parseShort(values[PlayerGameEnum.jerseyNumber.value]);
 
 		return new PlayerGame(values[PlayerGameEnum.gameID.value], jerseyNumber,
-				Short.valueOf(values[PlayerGameEnum.assists.value]),
-				Short.valueOf(values[PlayerGameEnum.goals.value]),
+				Short.valueOf(values[PlayerGameEnum.assists.value]), Short.valueOf(values[PlayerGameEnum.goals.value]),
 				Short.valueOf(values[PlayerGameEnum.hockeyAssists.value]),
 				Short.valueOf(values[PlayerGameEnum.completions.value]),
 				Short.valueOf(values[PlayerGameEnum.throwAttempts.value]),
@@ -210,15 +235,15 @@ public class StringConverters {
 			throws WrongSizeRowException, NumberFormatException, ParseException {
 		if (values.length != gameDetailLength)
 			throw new WrongSizeRowException(gameDetailLength, values.length);
-		return new GameDetails(values[GameDetailEnum.awayTeam.value],
-				values[GameDetailEnum.homeTeam.value], Short.valueOf(values[GameDetailEnum.awayScore.value]),
+		return new GameDetails(values[GameDetailEnum.awayTeam.value], values[GameDetailEnum.homeTeam.value],
+				Short.valueOf(values[GameDetailEnum.awayScore.value]),
 				Short.valueOf(values[GameDetailEnum.homeScore.value]),
 				parseStartTime(values[GameDetailEnum.time.value]), parseWeek(values[GameDetailEnum.week.value]));
 	}
 
 	private static long parseStartTime(String startTime) throws ParseException {
 		String removeT = startTime.replace('T', ' ');
-		String cutTimeZone = removeT.substring(0, removeT.length()-6);
+		String cutTimeZone = removeT.substring(0, removeT.length() - 6);
 		SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date actualDate = (Date) sdfDate.parse(cutTimeZone);
 		String[] splitBySpace = cutTimeZone.split(" ", 2);
@@ -237,16 +262,14 @@ public class StringConverters {
 		}
 		throw new NumberFormatException("Unknown value");
 	}
-	
+
 	enum PlayerSeasonEnum {
-		year(0), playerID(1), teamID(4), games(5), assists(6), goals(7),
-		hockeyAssists(8), completions(9), throwAttempts(10), throwaways(11),
-		stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15),
-		hucksAttempted(16), hucksCompleted(17), catches(18), drops(19),
-		blocks(20), callahans(21), pulls(22), obPulls(23), recordedPulls(24),
-		recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27),
-		dPointsPlayed(28), dPointsScored(29), secondsPlayed(30), oOpportunities(31),
-		oOpportunityScores(32), dOpportunities(33), dOpportunityStops(34);
+		year(0), playerID(1), teamID(4), games(5), assists(6), goals(7), hockeyAssists(8), completions(9),
+		throwAttempts(10), throwaways(11), stalls(12), callahansThrown(13), yardsReceived(14), yardsThrown(15),
+		hucksAttempted(16), hucksCompleted(17), catches(18), drops(19), blocks(20), callahans(21), pulls(22),
+		obPulls(23), recordedPulls(24), recordedPullsHangtime(25), oPointsPlayed(26), oPointsScored(27),
+		dPointsPlayed(28), dPointsScored(29), secondsPlayed(30), oOpportunities(31), oOpportunityScores(32),
+		dOpportunities(33), dOpportunityStops(34);
 
 		private PlayerSeasonEnum(int value) {
 			this.value = value;
@@ -261,8 +284,7 @@ public class StringConverters {
 
 	public static PlayerSeason convertToPlayerSeason(String[] values) {
 		return new PlayerSeason(Short.parseShort(values[PlayerSeasonEnum.year.value]),
-				values[PlayerSeasonEnum.teamID.value],
-				Short.parseShort(values[PlayerSeasonEnum.games.value]),
+				values[PlayerSeasonEnum.teamID.value], Short.parseShort(values[PlayerSeasonEnum.games.value]),
 				Short.parseShort(values[PlayerSeasonEnum.assists.value]),
 				Short.parseShort(values[PlayerSeasonEnum.goals.value]),
 				Short.parseShort(values[PlayerSeasonEnum.hockeyAssists.value]),
@@ -293,7 +315,7 @@ public class StringConverters {
 				Short.parseShort(values[PlayerSeasonEnum.dOpportunities.value]),
 				Short.parseShort(values[PlayerSeasonEnum.dOpportunityStops.value]));
 	}
-	
+
 	public enum TeamStatsEnum {
 		teamId(1), year(2), divisionId(3), wins(8), losses(9), ties(10), divStanding(11);
 
@@ -308,14 +330,168 @@ public class StringConverters {
 		}
 	}
 
-	
-
 	public static TeamStats convertToTeamStats(String[] values) {
-		return new TeamStats(Short.valueOf(values[TeamStatsEnum.year.value]),
-				values[TeamStatsEnum.divisionId.value], Short.valueOf(values[TeamStatsEnum.wins.value]),
-						Short.valueOf(values[TeamStatsEnum.losses.value]),
-						Short.valueOf(values[TeamStatsEnum.ties.value]),
-						Short.valueOf(values[TeamStatsEnum.divStanding.value]));
+		return new TeamStats(Short.valueOf(values[TeamStatsEnum.year.value]), values[TeamStatsEnum.divisionId.value],
+				Short.valueOf(values[TeamStatsEnum.wins.value]), Short.valueOf(values[TeamStatsEnum.losses.value]),
+				Short.valueOf(values[TeamStatsEnum.ties.value]),
+				Short.valueOf(values[TeamStatsEnum.divStanding.value]));
+	}
+
+	public static RawData convertToRawData(String[] values) throws NumberFormatException, BadEnumException, ParseException {
+		String gameClock = values[8];
+		String[] gameClockSplitByColon = gameClock.split(":");
+		short gameClockSeconds = (short) (Short.valueOf(gameClockSplitByColon[0]) * 3600
+				+ Short.valueOf(gameClockSplitByColon[1]) * 60 + Short.valueOf(gameClockSplitByColon[2]));
+
+		Coordinate location1 = new Coordinate(Double.valueOf(values[13]), Double.valueOf(values[14]));
+		Coordinate location2 = new Coordinate(Double.valueOf(values[16]), Double.valueOf(values[17]));
+		SimpleDateFormat formatter = new SimpleDateFormat("MM-dd-yyyy", Locale.ENGLISH);
+		Date gameDate = formatter.parse(values[28]);
+		data.raw.Weather weather = new data.raw.Weather(Double.parseDouble(values[29]), Double.parseDouble(values[30]), Double.parseDouble(values[31]), Double.parseDouble(values[32]),
+				RawDataEnums.YesNoNA.convertToEnum(values[74]));
+
+		LinkedList<String> defenders = new LinkedList<>();
+
+		for (short defendersValue = 36; defendersValue < 41; defendersValue++) {
+			defenders.add(values[defendersValue]);
+		}
+
+		LinkedList<String> markers = new LinkedList<>();
+
+		for (short markersValue = 41; markersValue < 43; markersValue++) {
+			markers.add(values[markersValue]);
+		}
+
+		LinkedList<String> poachers = new LinkedList<>();
+
+		for (short poachersValue = 43; poachersValue < 48; poachersValue++) {
+			poachers.add(values[poachersValue]);
+		}
+
+		LinkedList<String> deflectors = new LinkedList<>();
+
+		for (short deflectorsValue = 48; deflectorsValue < 50; deflectorsValue++) {
+			deflectors.add(values[deflectorsValue]);
+		}
+
+		LinkedList<String> dFoulers = new LinkedList<>();
+
+		for (short dFoulerValue = 54; dFoulerValue < 56; dFoulerValue++) {
+			dFoulers.add(values[dFoulerValue]);
+		}
+
+		String[] homePlayers = new String[7];
+
+		for (short homePlayersValue = 59; homePlayersValue < 66; homePlayersValue++) {
+			homePlayers[66 - homePlayersValue] = values[homePlayersValue];
+		}
+
+		String[] awayPlayers = new String[7];
+
+		for (short awayPlayersValue = 66; awayPlayersValue < 73; awayPlayersValue++) {
+			awayPlayers[73 - awayPlayersValue] = values[awayPlayersValue];
+		}
+
+		String player1Id = findPlayerIdByPull(values, true, values[11].equals("Pull Received"));
+		String player2Id = findPlayerIdByPull(values, false, values[11].equals("Pull Received"));
+
+		RawDataEnums.YesNoNA defendingTeamDLine = RawDataEnums.YesNoNA.NA;
+		switch (values[94]) {
+		case "O-Line":
+			defendingTeamDLine = RawDataEnums.YesNoNA.No;
+			break;
+		case "D-Line":
+			defendingTeamDLine = RawDataEnums.YesNoNA.Yes;
+			break;
+		default:
+			break;
+		}
+
+		RawDataEnums.YesNoNA offenseHome = RawDataEnums.YesNoNA.NA;
+		switch (values[97]) {
+		case "Away":
+			offenseHome = RawDataEnums.YesNoNA.No;
+			break;
+		case "Home":
+			offenseHome = RawDataEnums.YesNoNA.Yes;
+			break;
+		default:
+			break;
+		}
+
+		Coordinate location1Yards = new Coordinate(Double.valueOf(values[98]), Double.valueOf(values[100]));
+		Coordinate location2Yards = new Coordinate(Double.valueOf(values[99]), Double.valueOf(values[101]));
+		Coordinate throwDistance = new Coordinate(Double.valueOf(values[106]), Double.valueOf(values[107]));
+		Coordinate throwVector = new Coordinate(Double.valueOf(values[108]), Double.valueOf(values[109]));
+		Coordinate pullCoordinates = new Coordinate(Double.valueOf(values[111]), Double.valueOf(values[112]));
+
+		RawDataEnums.YesNoNA completedPass = RawDataEnums.YesNoNA.NA;
+		switch (values[115]) {
+		case "0":
+			completedPass = RawDataEnums.YesNoNA.No;
+			break;
+		case "1":
+			completedPass = RawDataEnums.YesNoNA.Yes;
+			break;
+		default:
+			break;
+		}
+
+		LinkedList<ForceDirection> mainForcePossession = new LinkedList<ForceDirection>();
+		for (ForceDirection forceDirection : ForceDirection.values()) {
+			if (values[124].toLowerCase().contains(forceDirection.toString().toLowerCase()))
+				mainForcePossession.add(forceDirection);
+		}
+
+		data.raw.GameInfo gameInfo = new data.raw.GameInfo(values[0], values[1].toLowerCase(), values[2].toLowerCase(),
+				RawDataEnums.FieldType.convertToEnum(values[3]), Short.valueOf(values[4]), Short.valueOf(values[5]),
+				RawDataEnums.OffenseDirection.convertToEnum(values[6]), QuarterEnum.convertFromString(values[7]),
+				gameClockSeconds);
+		data.raw.Component0 component0 = new data.raw.Component0(RawDataEnums.DefenseScheme.convertToEnum(values[9]),
+				values[10].toLowerCase(), RawDataEnums.EventType.convertToEnum(values[11]), player1Id, location1,
+				player2Id, location2, Double.valueOf(values[18]), RawDataEnums.PullInfo.convertToEnum(values[19]),
+				RawDataEnums.DefenderDistance.convertToEnum(values[20]), RawDataEnums.Force.convertToEnum(values[21]),
+				RawDataEnums.PassType.convertToEnum(values[22]), RawDataEnums.BrokeMark.convertToEnum(values[23]),
+				RawDataEnums.PassBreak.convertToEnum(values[24]));
+		data.raw.Component1 component1 = new data.raw.Component1(RawDataEnums.TurnoverType.convertToEnum(values[25]),
+				RawDataEnums.BlockType.convertToEnum(values[26]), RawDataEnums.FoulSide.convertToEnum(values[27]),
+				gameDate, weather, values[33].toLowerCase(), values[34], values[35], defenders, markers, poachers,
+				deflectors, values[51], values[52], values[53], dFoulers, values[57],
+				values[58]);
+		data.raw.Component2 component2 = new data.raw.Component2(homePlayers, awayPlayers, values[73], values[75].equals("Yes"), Short.valueOf(values[76]),
+				Short.valueOf(values[77]), RawDataEnums.YesNoNA.convertToEnum(values[78]), Short.parseShort(values[79]),
+				Short.parseShort(values[80]), RawDataEnums.TeamScored.convertToEnum(values[81]),
+				RawDataEnums.YesNoNA.convertToEnum(values[82]), Short.parseShort(values[83]),
+				Short.parseShort(values[84]), RawDataEnums.HomeTeamOutcome.convertToEnum(values[85]),
+				Short.valueOf(values[86]), Short.valueOf(values[87]), Short.valueOf(values[88]),
+				Short.valueOf(values[89]), RawDataEnums.QGroupTimeRemaining.convertToEnum(values[90]),
+				Short.valueOf(values[91]), RawDataEnums.YesNoNA.convertToEnum(values[92]));
+		data.raw.Component3 component3 = new data.raw.Component3(values[93].equals("O-Line"),
+				defendingTeamDLine, values[95].equals("O-Line"), values[96].equals("D-Line"), offenseHome,
+				location1Yards, location2Yards, Double.valueOf(values[102]), Double.valueOf(values[103]),
+				Double.valueOf(values[104]), Double.valueOf(values[105]), throwDistance, throwVector,
+				ThrowDirectionEnum.convertToEnum(values[110]), pullCoordinates, Double.valueOf(values[113]),
+				Double.valueOf(values[114]), completedPass, RawDataEnums.YesNoNA.convertToEnum(values[115]),
+				Short.valueOf(values[116]), Short.valueOf(values[117]));
+		data.raw.Component4 component4 = new data.raw.Component4(Byte.valueOf(values[118]),
+				Byte.valueOf(values[119]), Byte.valueOf(values[120]), Byte.valueOf(values[121]),
+				ClosestDefenderTight.convertToEnum(values[122]), ForceDirection.convertToEnum(values[123]),
+				mainForcePossession, Double.valueOf(values[125]), RawDataEnums.YesNoNA.convertToEnum(values[126]),
+				values[127].equals("TRUE"), values[128].equals("TRUE"), values[129].equals("TRUE"),
+				DefenseScheme.convertToEnum(values[130]));
+		return new RawData(gameInfo, component0, component1, component2, component3, component4);
+	}
+
+	private static String findPlayerIdByPull(String[] values, boolean isPlayer1, boolean isPull) {
+		if (isPull)
+			if (isPlayer1)
+				return values[51];
+			else
+				return values[52];
+		else
+			if (isPlayer1)
+				return values[34];
+			else
+				return values[35];
 	}
 }
-
