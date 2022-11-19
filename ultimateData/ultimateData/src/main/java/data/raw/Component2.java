@@ -21,10 +21,11 @@ public class Component2 {
 	final Short homeScoreEndofGame;
 	final Short awayScoreEndofGame;
 	final RawDataEnums.HomeTeamOutcome homeTeamGameOutcome;
+	final Double durationEventEstimate;
 	final Short gameClockEstimate;
 	final Short durationPointEstimate;
-	final Short timeRemainingRegularGame;
-	final Short timeRemainingQuarter;
+	final Double timeRemainingRegularGame;
+	final Double timeRemainingQuarter;
 	final RawDataEnums.QGroupTimeRemaining timeRemainingQGroup;
 	final Short numberThrowOfQuarter;
 	final RawDataEnums.YesNoNA lastThrowOfQuarter;	
@@ -33,8 +34,8 @@ public class Component2 {
 			Short homeAwayDifferential, Short offenseDefenseDifferential, RawDataEnums.YesNoNA regulationDone,
 			Short possessionNumber, Short pointNumber, TeamScored teamScoredOnPoint, YesNoNA teamScoredOnPossession,
 			Short homeScoreEndofGame, Short awayScoreEndofGame, HomeTeamOutcome homeTeamGameOutcome,
-			Short gameClockEstimate, Short durationPointEstimate, Short timeRemainingRegularGame,
-			Short timeRemainingQuarter, QGroupTimeRemaining timeRemainingQGroup, Short numberThrowOfQuarter,
+			Double durationEventEstimate, Short gameClockEstimate, Short durationPointEstimate, Double timeRemainingRegularGame,
+			Double timeRemainingQuarter, QGroupTimeRemaining timeRemainingQGroup, Short numberThrowOfQuarter,
 			YesNoNA lastThrowOfQuarter) {
 		this.homePlayerIds = homePlayerIds;
 		this.awayPlayerIds = awayPlayerIds;
@@ -50,6 +51,7 @@ public class Component2 {
 		this.homeScoreEndofGame = homeScoreEndofGame;
 		this.awayScoreEndofGame = awayScoreEndofGame;
 		this.homeTeamGameOutcome = homeTeamGameOutcome;
+		this.durationEventEstimate = durationEventEstimate;
 		this.gameClockEstimate = gameClockEstimate;
 		this.durationPointEstimate = durationPointEstimate;
 		this.timeRemainingRegularGame = timeRemainingRegularGame;

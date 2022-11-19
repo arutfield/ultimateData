@@ -1,20 +1,22 @@
 package data;
 
 public class Coordinate {
-	private final double x;
-	private final double y;
-	public Coordinate(double x, double y) {
+	private final Double x;
+	private final Double y;
+	public Coordinate(Double x, Double y) {
 		this.x = x;
 		this.y = y;
 	}
-	public double getX() {
+	public Double getX() {
 		return x;
 	}
-	public double getY() {
+	public Double getY() {
 		return y;
 	}
 	
-	public double getMagnitude() {
+	public Double getMagnitude() {
+		if (x == null || y == null)
+			return null;
 		return Math.sqrt(Math.pow(x, 2) + Math.pow(y,  2));
 	}
 }

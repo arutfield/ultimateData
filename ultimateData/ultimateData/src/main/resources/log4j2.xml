@@ -15,7 +15,7 @@
         <Logger name="parser" level="info" additivity="false">
             <AppenderRef ref="File1"/>
         </Logger>
-        <Root level="error">
+        <Root level="info">
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>

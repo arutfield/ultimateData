@@ -36,7 +36,7 @@ public class Main {
     	Records.loadGames();
     	Records.loadPlayerSeasonStats();
     	Records.loadTeamStats();
-    	
+    	Records.loadRawData();
 
     	for (Team team : Records.getTeamRecords()) {
     		logger.info("Found team " + team.getTeamId() + " with " + team.getTeamStats().size() + " seasons");

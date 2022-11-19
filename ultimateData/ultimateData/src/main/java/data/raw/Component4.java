@@ -10,13 +10,14 @@ import enums.RawDataEnums.YesNoNA;
 
 public class Component4 {
 
-	final byte numberOfMarkers;
-	final byte numberOfMarkersPlusPoachers;
-	final byte numberOfPoachers;
-	final byte numberOfClosestDefenders;
+	final Byte numberOfMarkers;
+	final Byte numberOfMarkersPlusPoachers;
+	final Byte numberOfPoachers;
+	final Byte numberOfClosestDefenders;
 	final RawDataEnums.ClosestDefenderTight closestDefenderTight;
 	final RawDataEnums.ForceDirection forceDirection;
 	final LinkedList<RawDataEnums.ForceDirection> mainForcePossession;
+	final LinkedList<RawDataEnums.ForceDirection> mainForcePossessionDirection;
 	final Double throwAngle;
 	final RawDataEnums.YesNoNA overheadThrow;
 	final boolean anyZoneDOnPossession;
@@ -24,9 +25,10 @@ public class Component4 {
 	final boolean anyPersonDOnPossession;
 	final DefenseScheme dSchemePossession;
 	
-	public Component4(byte numberOfMarkers, byte numberOfMarkersPlusPoachers, byte numberOfPoachers,
-			byte numberOfClosestDefenders, ClosestDefenderTight closestDefenderTight, ForceDirection forceDirection,
-			LinkedList<ForceDirection> mainForcePossession, Double throwAngle, YesNoNA overheadThrow,
+	public Component4(Byte numberOfMarkers, Byte numberOfMarkersPlusPoachers, Byte numberOfPoachers,
+			Byte numberOfClosestDefenders, ClosestDefenderTight closestDefenderTight, ForceDirection forceDirection,
+			LinkedList<ForceDirection> mainForcePossession, LinkedList<ForceDirection> mainForcePossessionDirection,
+			Double throwAngle, YesNoNA overheadThrow,
 			boolean anyZoneDOnPossession, boolean anyMixedDOnPossession, boolean anyPersonDOnPossession,
 			DefenseScheme dSchemePossession) {
 		this.numberOfMarkers = numberOfMarkers;
@@ -36,6 +38,7 @@ public class Component4 {
 		this.closestDefenderTight = closestDefenderTight;
 		this.forceDirection = forceDirection;
 		this.mainForcePossession = mainForcePossession;
+		this.mainForcePossessionDirection = mainForcePossessionDirection;
 		this.throwAngle = throwAngle;
 		this.overheadThrow = overheadThrow;
 		this.anyZoneDOnPossession = anyZoneDOnPossession;

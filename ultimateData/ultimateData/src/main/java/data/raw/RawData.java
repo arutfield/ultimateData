@@ -274,11 +274,11 @@ public class RawData {
 		return component2.durationPointEstimate;
 	}
 
-	public Short getTimeRemainingRegularGame() {
+	public Double getTimeRemainingRegularGame() {
 		return component2.timeRemainingRegularGame;
 	}
 
-	public Short getTimeRemainingQuarter() {
+	public Double getTimeRemainingQuarter() {
 		return component2.timeRemainingQuarter;
 	}
 

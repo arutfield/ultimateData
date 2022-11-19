@@ -5,13 +5,7 @@ import exceptions.BadEnumException;
 public class RawDataEnums {
 
 	public enum ForceDirection {
-		Left,
-		NA,
-		None,
-		Right,
-		Rotating,
-		Other,
-		StraightUp;
+		Left, NA, None, Right, Rotating, Other, StraightUp;
 
 		public static ForceDirection convertToEnum(String val) throws BadEnumException {
 			switch (val) {
@@ -24,6 +18,7 @@ public class RawDataEnums {
 			case "Right":
 				return Right;
 			case "Rotating":
+			case "Rotating/Other":
 				return Rotating;
 			case "Other":
 				return Other;
@@ -36,12 +31,8 @@ public class RawDataEnums {
 	}
 
 	public enum ClosestDefenderTight {
-		NS,
-		NA,
-		No,
-		Yes,
-		None;
-		
+		NS, NA, No, Yes, None;
+
 		public static ClosestDefenderTight convertToEnum(String val) throws BadEnumException {
 			switch (val) {
 			case "N/S":
@@ -51,6 +42,7 @@ public class RawDataEnums {
 			case "No":
 				return No;
 			case "none":
+			case "None":
 				return None;
 			case "Yes":
 				return Yes;
@@ -58,18 +50,11 @@ public class RawDataEnums {
 				throw new BadEnumException(val, ClosestDefenderTight.class.getName());
 			}
 		}
-		
+
 	}
 
 	public enum ThrowDirectionEnum {
-		DishDownfield,
-		DishDump,
-		DishSwing,
-		Downfield,
-		Dump,
-		FullFieldSwing,
-		PartFieldSwing,
-		NA;
+		DishDownfield, DishDump, DishSwing, Downfield, Dump, FullFieldSwing, PartFieldSwing, NA;
 
 		public static ThrowDirectionEnum convertToEnum(String val) throws BadEnumException {
 			switch (val) {
@@ -97,11 +82,8 @@ public class RawDataEnums {
 	}
 
 	public enum QGroupTimeRemaining {
-		ZeroToFive,
-		FiveToThirty,
-		OverThirty,
-		OT;
-		
+		ZeroToFive, FiveToThirty, OverThirty, OT;
+
 		public static QGroupTimeRemaining convertToEnum(String val) throws BadEnumException {
 			switch (val) {
 			case "0-5 sec":
@@ -117,13 +99,11 @@ public class RawDataEnums {
 			}
 		}
 
-	
 	}
 
 	public enum HomeTeamOutcome {
-		Win,
-		Lose,
-		Tie;
+		Win, Lose, Tie;
+
 		public static HomeTeamOutcome convertToEnum(String val) throws BadEnumException {
 			switch (val) {
 			case "W":
@@ -136,14 +116,12 @@ public class RawDataEnums {
 				throw new BadEnumException(val, TeamScored.class.getName());
 			}
 		}
-		
+
 	}
 
 	public enum TeamScored {
-		Yes,
-		No,
-		DefenseScored;
-		
+		Yes, No, NA, DefenseScored;
+
 		public static TeamScored convertToEnum(String val) throws BadEnumException {
 			switch (val) {
 			case "0":
@@ -152,6 +130,8 @@ public class RawDataEnums {
 				return Yes;
 			case "-1":
 				return DefenseScored;
+			case "NA":
+				return NA;
 			default:
 				throw new BadEnumException(val, TeamScored.class.getName());
 			}
@@ -209,7 +189,7 @@ public class RawDataEnums {
 			case "Point-Block":
 				return PointBlock;
 			default:
-				throw new BadEnumException(val, BlockType.class.getName());				
+				throw new BadEnumException(val, BlockType.class.getName());
 
 			}
 		}
@@ -237,7 +217,7 @@ public class RawDataEnums {
 			case "Throwaway Out-of-Bounds":
 				return ThrowawayOutofBounds;
 			default:
-				throw new BadEnumException(val, TurnoverType.class.getName());				
+				throw new BadEnumException(val, TurnoverType.class.getName());
 
 			}
 		}
@@ -259,7 +239,7 @@ public class RawDataEnums {
 			case "Rotating/Other":
 				return Rotating;
 			default:
-				throw new BadEnumException(val, PassBreak.class.getName());				
+				throw new BadEnumException(val, PassBreak.class.getName());
 
 			}
 		}
@@ -279,7 +259,7 @@ public class RawDataEnums {
 			case "Yes":
 				return Yes;
 			default:
-				throw new BadEnumException(val, BrokeMark.class.getName());				
+				throw new BadEnumException(val, BrokeMark.class.getName());
 
 			}
 		}
@@ -305,7 +285,7 @@ public class RawDataEnums {
 			case "Scoober":
 				return Scoober;
 			default:
-				throw new BadEnumException(val, PassType.class.getName());				
+				throw new BadEnumException(val, PassType.class.getName());
 
 			}
 		}
@@ -331,7 +311,7 @@ public class RawDataEnums {
 			case "Unmarked/Not Covered":
 				return Unmarked;
 			default:
-				throw new BadEnumException(val, Force.class.getName());				
+				throw new BadEnumException(val, Force.class.getName());
 
 			}
 		}
@@ -358,6 +338,7 @@ public class RawDataEnums {
 			case "No Defender":
 				return NoDefender;
 			case "none":
+			case "None":
 				return None;
 			case "Open (3-10 Yds)":
 			case "3-10 Yds (Open)":
@@ -365,7 +346,7 @@ public class RawDataEnums {
 			case "Yes":
 				return Yes;
 			default:
-				throw new BadEnumException(val, DefenderDistance.class.getName());				
+				throw new BadEnumException(val, DefenderDistance.class.getName());
 
 			}
 		}
@@ -391,7 +372,7 @@ public class RawDataEnums {
 			case "Roller Out-of-Bounds":
 				return RollerOut;
 			default:
-				throw new BadEnumException(val, PullInfo.class.getName());				
+				throw new BadEnumException(val, PullInfo.class.getName());
 
 			}
 		}
@@ -399,25 +380,25 @@ public class RawDataEnums {
 
 	public enum EventType {
 		completedPass, Foul, GapInVideo, PullReceived, Timeout, Turnover, FoulTurnover;
-		
+
 		public static EventType convertToEnum(String val) throws BadEnumException {
-			switch (val) {
-			case "Completed Pass":
+			switch (val.toLowerCase()) {
+			case "completed pass":
 				return completedPass;
-			case "Foul":
+			case "foul":
 				return Foul;
-			case "Gap in Video":
+			case "gap in video":
 				return GapInVideo;
-			case "Pull Received":
+			case "pull received":
 				return PullReceived;
-			case "Timeout":
+			case "timeout":
 				return Timeout;
-			case "Turnover":
+			case "turnover":
 				return Turnover;
-			case "Turnover/Foul":
+			case "turnover/foul":
 				return FoulTurnover;
 			default:
-				throw new BadEnumException(val, EventType.class.getName());				
+				throw new BadEnumException(val, EventType.class.getName());
 
 			}
 		}
@@ -439,7 +420,7 @@ public class RawDataEnums {
 			case "Zone":
 				return Zone;
 			default:
-				throw new BadEnumException(val, DefenseScheme.class.getName());				
+				throw new BadEnumException(val, DefenseScheme.class.getName());
 
 			}
 		}
@@ -447,7 +428,7 @@ public class RawDataEnums {
 
 	public enum FieldType {
 		CFL, College, HighSchool, HomeField, NoHashMarks, Unmarked;
-		
+
 		public static FieldType convertToEnum(String val) throws BadEnumException {
 			switch (val) {
 			case "CFL":
@@ -463,7 +444,7 @@ public class RawDataEnums {
 			case "Other (Unmarked)":
 				return Unmarked;
 			default:
-				throw new BadEnumException(val, FieldType.class.getName());				
+				throw new BadEnumException(val, FieldType.class.getName());
 
 			}
 		}
@@ -481,7 +462,7 @@ public class RawDataEnums {
 			case "Right":
 				return Right;
 			default:
-				throw new BadEnumException(val, OffenseDirection.class.getName());				
+				throw new BadEnumException(val, OffenseDirection.class.getName());
 			}
 		}
 	}
