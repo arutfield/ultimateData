@@ -206,12 +206,28 @@ public class Records {
 					seenHeaderLine = true;
 					continue;
 				}
+				LinkedList<Integer> commaIndices = new LinkedList<Integer>();
 				if (line.contains('"' + "")) {// this isn't the ideal solution, but double commas is very complicated to
-												// deal with. TODO: fix
-					continue;
+					int quoteIndex = line.indexOf('"' + "");
+					int quoteIndex2 = line.substring(quoteIndex + 1).indexOf('"' + "") + quoteIndex + 1;
+					String quotedSection = line.substring(quoteIndex + 1, quoteIndex2);
+					for (int i=0; i<quotedSection.length(); i++) {
+						if (quotedSection.charAt(i) == ',') {
+							commaIndices.add(i);
+						}
+					}
+					//remove commas to _ (will be replaced later)
+					for (int i=quoteIndex; i<quoteIndex2; i++) {
+						if (line.charAt(i) == ',')
+							line = line.substring(0, i) + "_" + line.substring(i+ 1);
+					}
+					//convert quotes to commas
+					line = line.substring(0, quoteIndex) + line.substring(quoteIndex + 1);
+					line = line.substring(0, quoteIndex2 - 1) + line.substring(quoteIndex2);
+
 				}
 				String[] values = line.split(",");
-				logger.info(line);
+				logger.debug(line);
 				RawData rawData = StringConverters.convertToRawData(values);
 				rawDataRecords.add(rawData);
 			}

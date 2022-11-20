@@ -492,6 +492,7 @@ public class StringConverters {
 	}
 
 	private static String findPlayerIdByPull(String[] values, boolean isPlayer1, boolean isPull) {
+		//System.out.println(values[51] + ", " + values[52] + ", " + values[53] + ", " + values[54]);
 		if (isPull)
 			if (isPlayer1)
 				return values[51];
