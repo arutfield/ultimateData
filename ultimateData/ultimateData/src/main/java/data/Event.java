@@ -4,7 +4,7 @@ import enums.EventTypeEnum;
 import enums.QuarterEnum;
 
 public class Event {
-	private class gameTeam{
+	public class gameTeam{
 		final String teamName;
 		final boolean isAway;
 		final boolean isRecording;
@@ -14,6 +14,22 @@ public class Event {
 			this.isAway = isAway;
 			this.isRecording = isRecording;
 			this.isOffense = isOffense;
+		}
+		
+		public String getTeamName() {
+			return teamName;
+		}
+
+		public boolean isAway() {
+			return isAway;
+		}
+
+		public boolean isRecording() {
+			return isRecording;
+		}
+
+		public boolean isOffense() {
+			return isOffense;
 		}
 	}
 	
@@ -27,11 +43,11 @@ public class Event {
 	private final byte homeTeamScore;
 	private final byte awayTeamScore;
 	private final QuarterEnum quarter;
-	private final int quarterTime;
+	private final Integer quarterTime;
 	private final String[] players;
 	private final String puller;
 	private final Coordinate pullCoordinates;
-	private final int pullMs;
+	private final Integer pullMs;
 	private final String thrower;
 	private final Coordinate throwerCoordinates;
 	private final Coordinate receiverCoordinates;
@@ -42,15 +58,16 @@ public class Event {
 	
 	
 	public Event(String awayTeam, String homeTeam, String recordingTeam,
-			String offenseTeam, String defenseTeam, boolean isHomeOffense, EventTypeEnum eventType,
+			String offenseTeam, String defenseTeam, boolean isHomeOffense,
+			EventTypeEnum eventType,
 			byte pointNumber, byte possessionNumber, byte throwInPossession, byte homeTeamScore,
-			byte awayTeamScore, QuarterEnum quarter, int quarterTime, String[] players,
-			String puller, Coordinate pullCoordinates, int pullMs, String thrower,
+			byte awayTeamScore, QuarterEnum quarter, Integer quarterTime, String[] players,
+			String puller, Coordinate pullCoordinates, Integer pullMs, String thrower,
 			Coordinate throwerCoordinates, Coordinate receiverCoordinates,
 			Coordinate throwDistance, String defender, Coordinate turnoverCoordinates, short index)
 	{
-		this.awayTeam = new gameTeam(awayTeam, true, (recordingTeam == awayTeam), (offenseTeam == awayTeam));
-		this.homeTeam = new gameTeam(homeTeam, true, (recordingTeam == homeTeam), (offenseTeam == homeTeam));
+		this.awayTeam = new gameTeam(awayTeam, true, (recordingTeam.equals(awayTeam)), (offenseTeam.equals(awayTeam)));
+		this.homeTeam = new gameTeam(homeTeam, false, (recordingTeam.equals(homeTeam)), (offenseTeam.equals(homeTeam)));
 		this.isHomeOffense = isHomeOffense; //=2 if home is offense
 		this.eventType = eventType;
 		this.pointNumber = pointNumber;
@@ -110,7 +127,7 @@ public class Event {
 		return quarter;
 	}
 
-	public int getQuarterTime() {
+	public Integer getQuarterTime() {
 		return quarterTime;
 	}
 
@@ -126,7 +143,7 @@ public class Event {
 		return pullCoordinates;
 	}
 
-	public int getPullMs() {
+	public Integer getPullMs() {
 		return pullMs;
 	}
 

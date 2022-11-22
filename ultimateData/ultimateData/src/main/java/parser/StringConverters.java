@@ -136,7 +136,7 @@ public class StringConverters {
 			logger.debug("NumberFormat Exception for finding turnover coordinates: " + ex.getMessage());
 		}
 
-		int pullMs = Integer.MIN_VALUE;
+		Integer pullMs = null;
 		try {
 			pullMs = Integer.parseInt(values[GameEventEnum.pullMs.value]);
 		} catch (NumberFormatException ex) {
@@ -145,7 +145,7 @@ public class StringConverters {
 
 		return new Event(values[GameEventEnum.awayTeam.value], values[GameEventEnum.homeTeam.value],
 				values[GameEventEnum.recordingTeam.value], values[GameEventEnum.offenseTeam.value],
-				values[GameEventEnum.defenseTeam.value], values[GameEventEnum.offense.value] == "1",
+				values[GameEventEnum.defenseTeam.value], values[GameEventEnum.offense.value].equals("2"),
 				EventTypeEnum.convertFromString(values[GameEventEnum.eventType.value]),
 				Byte.parseByte(values[GameEventEnum.pointNumber.value]),
 				Byte.parseByte(values[GameEventEnum.possessionNumber.value]),
@@ -198,7 +198,7 @@ public class StringConverters {
 				Short.valueOf(values[PlayerGameEnum.callahans.value]),
 				Short.valueOf(values[PlayerGameEnum.pulls.value]), Short.valueOf(values[PlayerGameEnum.obPulls.value]),
 				Short.valueOf(values[PlayerGameEnum.recordedPulls.value]),
-				Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value]),
+				(Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value]) > 0) ? Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value])  : null,
 				Short.valueOf(values[PlayerGameEnum.oPointsPlayed.value]),
 				Short.valueOf(values[PlayerGameEnum.oPointsScored.value]),
 				Short.valueOf(values[PlayerGameEnum.dPointsPlayed.value]),
