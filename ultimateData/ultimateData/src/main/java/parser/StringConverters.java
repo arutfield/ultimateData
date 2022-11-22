@@ -198,7 +198,7 @@ public class StringConverters {
 				Short.valueOf(values[PlayerGameEnum.callahans.value]),
 				Short.valueOf(values[PlayerGameEnum.pulls.value]), Short.valueOf(values[PlayerGameEnum.obPulls.value]),
 				Short.valueOf(values[PlayerGameEnum.recordedPulls.value]),
-				(Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value]) > 0) ? Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value])  : null,
+				(Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value]) >= 0) ? Integer.valueOf(values[PlayerGameEnum.recordedPullsHangtime.value])  : null,
 				Short.valueOf(values[PlayerGameEnum.oPointsPlayed.value]),
 				Short.valueOf(values[PlayerGameEnum.oPointsScored.value]),
 				Short.valueOf(values[PlayerGameEnum.dPointsPlayed.value]),
