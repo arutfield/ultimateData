@@ -1,11 +1,15 @@
 package ultimateData;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,8 +20,13 @@ import data.Game;
 import data.GameDetails;
 import data.PlayerGame;
 import data.PlayerSeason;
+import data.TeamStats;
+import data.raw.RawData;
+import data.raw.Weather;
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
+import enums.RawDataEnums;
+import enums.RawDataEnums.DefenseScheme;
 import exceptions.BadEnumException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters;
@@ -36,6 +45,14 @@ public class DataInputTest {
 		assertEquals(isOffenseTarget, team.isOffense());
 	}
 
+	public void checkWeather(Weather weather, Double desiredTemperature, Double desiredWindSpeed, Double desiredWindDirection, Double desiredPrecipitation, RawDataEnums.YesNoNA desiredAnyPrecipitation) {
+		assertEquals(desiredTemperature, weather.getTemperature(), 0.001);
+		assertEquals(desiredWindSpeed, weather.getWindSpeed(), 0.001);
+		assertEquals(desiredWindDirection, weather.getWindDirection());
+		assertEquals(desiredPrecipitation, weather.getPrecipitation());
+		assertEquals(desiredAnyPrecipitation, weather.getAnyPrecipitation());
+	}
+	
 	@Test
 	public void testTest() {
 		assertTrue(true);
@@ -160,14 +177,14 @@ public class DataInputTest {
 		String[] values = sampleString.split(",");
 		GameDetails gameDetails = StringConverters.convertToGameDetails(values);
 
-		assertEquals("legion",gameDetails.getAwayTeam());
-		assertEquals("sol",gameDetails.getHomeTeam());
-		assertEquals(23,gameDetails.getAwayScore());
-		assertEquals(24,gameDetails.getHomeScore());
-		assertEquals(68400000,gameDetails.getTime());
-		assertEquals(2,gameDetails.getWeek());
+		assertEquals("legion", gameDetails.getAwayTeam());
+		assertEquals("sol", gameDetails.getHomeTeam());
+		assertEquals(23, gameDetails.getAwayScore());
+		assertEquals(24, gameDetails.getHomeScore());
+		assertEquals(68400000, gameDetails.getTime());
+		assertEquals(2, gameDetails.getWeek());
 	}
-	
+
 	@Test
 	public void testConvertToPlayerSeason() {
 		String sampleString = "2021,mbrownlee,Marques,Brownlee,empire,12,12,3,5,44,52,8,0,0,475,530,3,1,49,0,12,0,175,20,155,1005972,1,0,211,59,14950,104,59,255,122";
@@ -206,5 +223,126 @@ public class DataInputTest {
 		assertEquals(255, playerSeason.getdOpportunities());
 		assertEquals(122, playerSeason.getdOpportunityStops());
 	}
+
+	@Test
+	public void testConvertTeamStats() {
+		String sampleString = "union2015,union,2015,midwest,Midwest,Chicago,Chicago Union,CHI,8,6,1,3";
+		String[] values = sampleString.split(",");
+		TeamStats teamStats = StringConverters.convertToTeamStats(values);
+		assertEquals(2015, teamStats.getYear());
+		assertEquals("midwest", teamStats.getDivisionID());
+		assertEquals(8, teamStats.getWins());
+		assertEquals(6, teamStats.getLosses());
+		assertEquals(1, teamStats.getTies());
+		assertEquals(3, teamStats.getDivStanding());
+	}
+
+	//682
+	@Test
+	public void testRawData() throws NumberFormatException, BadEnumException, ParseException {
+		String sampleString = "8/20/21: Empire vs. Glory,Empire,Glory,High School,7,5,Left,Q1,0:00:00,Zone,Empire,Turnover,11,0.800728463,0.682992254,27,0.151269003,0.810201943,NA,none,none,Unmarked/Not Covered,Backhand,none,none,Blocked Pass,Interception,none,8/20/2021,77.1,2.6,7,0.04,Glory,jwilliams,bjagt,ocable,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ocable,NA,NA,NA,NA,NA,NA,NA,NA,NA,bjagt,jwilliams,bkatz1,rweaver,jlithio,jbabbitt,rosgar,thalkyard,bmccann,jkurmanfa,ocable,nthompson,cbartoli,adonadio,New York,1,No,2,2,1,19,13,0,0,25,21,W,3,0:00:00,3,2160,0,0-5 sec,135,1,O-Line,D-Line,O-Line,D-Line,Home,35.6996958,41.99021421,5.902644686,79.53013435,74.09735531,0.469865646,9.033029138,15.32354754,6.290518404,73.62748967,6.290518404,73.62748967,Downfield,18.24239737,-0.987006296,NA,80.9870063,0,0,1,1,0,0,0,1,none,None,None,,85.11667427,0,TRUE,FALSE,FALSE,Zone";
+		String[] values = sampleString.split(",");
+		RawData rawData = StringConverters.convertToRawData(values);
+		assertEquals(RawDataEnums.DefenseScheme.Zone, rawData.getDefenseScheme());
+		assertEquals("empire", rawData.getTeamId());
+		assertEquals(RawDataEnums.EventType.Turnover, rawData.getEventType());
+		assertEquals("jwilliams", rawData.getPlayer1Id());
+		checkCoordinates(rawData.getLocation1(), 0.800728463, 0.682992254);
+		assertEquals("bjagt", rawData.getPlayer2Id());
+		checkCoordinates(rawData.getLocation2(), 0.151269003, 0.810201943);
+		assertNull(rawData.getPullTime());
+		assertEquals(RawDataEnums.PullInfo.None, rawData.getPullInfo());
+		assertEquals(RawDataEnums.DefenderDistance.None, rawData.getClosestDefenderDistance());
+		assertEquals(RawDataEnums.Force.Unmarked, rawData.getForce());
+		assertEquals(RawDataEnums.PassType.Backhand, rawData.getPassType());
+		assertEquals(RawDataEnums.BrokeMark.None, rawData.getBrokeMark());
+		assertEquals(RawDataEnums.PassBreak.None, rawData.getPassBreak());
+		assertEquals(RawDataEnums.TurnoverType.blockedPass, rawData.getTurnoverType());
+		assertEquals(RawDataEnums.BlockType.Interception, rawData.getBlockType());
+		assertEquals(RawDataEnums.FoulSide.None, rawData.getFoulSide());
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+		Date actualDate = formatter.parse("08/20/2021");
+		assertEquals(actualDate, rawData.getGameDate());
+		checkWeather(rawData.getWeather(), 77.1, 2.6, 7.0, 0.04, RawDataEnums.YesNoNA.Yes);
+		assertEquals("glory", rawData.getDefendingTeamId());
+		assertEquals("jwilliams", rawData.getThrowerId());
+		assertEquals("bjagt", rawData.getTargetedReceiverId());
+		checkList(rawData.getClosestDefenders(), new String[] {"ocable", "NA", "NA", "NA", "NA", "NA"});
+		checkList(rawData.getMarkers(), new String[] {"NA", "NA"});
+		checkList(rawData.getPoachers(), new String[] {"NA", "NA", "NA", "NA", "NA"});
+		checkList(rawData.getDeflectors(), new String[] {"ocable", "NA"});
+		assertEquals("NA", rawData.getPullThrowerId());
+		assertEquals("NA", rawData.getPullReceiverId());
+		assertEquals("NA", rawData.getoFoulerId());
+		checkList(rawData.getdFoulerIds(), new String[] {"NA", "NA", "NA"});
+		assertEquals("NA", rawData.getoFouledId());
+		assertEquals("NA", rawData.getdFouledId());
+		assertEquals(new String[] {"bjagt", "jwilliams", "bkatz1", "rweaver", "jlithio", "jbabbitt", "rosgar"}, rawData.getHomePlayerIds());
+		assertEquals(new String[] {"thalkyard", "bmccann", "jkurmanfa", "ocable", "nthompson", "cbartoli", "adonadio"}, rawData.getAwayPlayerIds());
+		assertEquals("New York", rawData.getHomeTeamLocation());
+		assertEquals(false, rawData.isFieldCflType());
+		assertEquals(2, (short) rawData.getHomeAwayDifferential());
+		assertEquals(2, (short) rawData.getOffenseDefenseDifferential());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.isRegulationDone());
+		assertEquals(19, (short) rawData.getPossessionNumber());
+		assertEquals(13, (short) rawData.getPointNumber());
+		assertEquals(RawDataEnums.TeamScored.No, rawData.getTeamScoredOnPoint());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.isTeamScoredOnPossession());
+		assertEquals(25, (short) rawData.getHomeScoreEndofGame());
+		assertEquals(21, (short) rawData.getAwayScoreEndofGame());
+		assertEquals(RawDataEnums.HomeTeamOutcome.Win, rawData.getHomeTeamGameOutcome());
+		assertEquals(3, rawData.getDurationPointEstimate(), 0.001);
+		assertEquals(0, rawData.getGameClockEstimate(), 0.001);
+		assertEquals(3, rawData.getDurationPointEstimate(), 0.001);
+		assertEquals(2160, rawData.getTimeRemainingRegularGame(), 0.001);
+		assertEquals(0, rawData.getTimeRemainingQuarter(), 0.001);
+		assertEquals(RawDataEnums.QGroupTimeRemaining.ZeroToFive, rawData.getTimeRemainingQGroup());
+		assertEquals(135, (short) rawData.getNumberThrowOfQuarter());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.getLastThrowOfQuarter());
+		assertEquals(true, rawData.isoTeamLine());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.getDefendingTeamLineDLine());
+		assertEquals(true, rawData.isHomeTeamOLine());
+		assertEquals(true, rawData.isAwayTeamDLine());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.getOffenseHome());
+		checkCoordinates(rawData.getLocation1Yards(), 35.6997, 5.902645);
+		checkCoordinates(rawData.getLocation2Yards(), 41.99021, 79.53013);
+		assertEquals(74.09736, (double) rawData.getLocation1YardsToEndzone(), 0.001);
+		assertEquals(0.469866, (double) rawData.getLocation2YardsToEndzone(), 0.001);
+		assertEquals(9.033029, (double) rawData.getLocation1YardsFromMiddle(), 0.001);
+		assertEquals(15.32355, (double) rawData.getLocation2YardsFromMiddle(), 0.001);
+		checkCoordinates(rawData.getThrowDistance(), 6.290518404, 73.62748967);
+		checkCoordinates(rawData.getThrowVector(), 6.290518404, 73.62748967);
+		assertEquals(rawData.getThrowDirectionCategory(), RawDataEnums.ThrowDirectionEnum.Downfield);
+		checkCoordinates(rawData.getPullCoordinates(), 18.24239737, -0.987006296);
+		assertNull(rawData.getPullYardsFromMiddle());
+		assertEquals(80.98701, rawData.getPullYDistance(), 0.001);
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getCompletedPass());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getScoringPass());
+		assertEquals(1, (short) rawData.getThrowNumberInPossession());
+		assertEquals(1, (short) rawData.getThrowNumberInPoint());
+		//Component 4
+		assertEquals(0, (byte) rawData.getNumberOfMarkers());
+		assertEquals(0, (byte) rawData.getNumberOfMarkersPlusPoachers());
+		assertEquals(0, (byte) rawData.getNumberOfPoachers());
+		assertEquals(1, (byte) rawData.getNumberOfClosestDefenders());
+		assertEquals(RawDataEnums.ClosestDefenderTight.None, rawData.getClosestDefenderTight());
+		assertEquals(RawDataEnums.ForceDirection.None, rawData.getForceDirection());
+		checkList(rawData.getMainForcePossession(), new RawDataEnums.ForceDirection[] {RawDataEnums.ForceDirection.None});
+		checkList(rawData.getMainForcePossessionDirection(), new RawDataEnums.ForceDirection[] {});
+		assertEquals(85.11667, (double) rawData.getThrowAngle(), 0.001);
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getOverheadThrow());
+		assertEquals(true, rawData.isAnyZoneDOnPossession());
+		assertEquals(false, rawData.isAnyMixedDOnPossession());
+		assertEquals(false, rawData.isAnyPersonDOnPossession());
+		assertEquals(DefenseScheme.Zone, rawData.getdSchemePossession());
+	}
+
+	private <T> void checkList(LinkedList<T> desiredStringList, T[] strings) {
+		assertEquals(desiredStringList.size(), strings.length);
+		for (int i=0; i<desiredStringList.size(); i++)
+			assertEquals(desiredStringList.get(i), strings[i]);
+		
+	}
+
 
 }

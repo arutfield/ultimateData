@@ -365,31 +365,31 @@ public class StringConverters {
 
 		LinkedList<String> defenders = new LinkedList<>();
 
-		for (short defendersValue = 36; defendersValue < 41; defendersValue++) {
+		for (short defendersValue = 36; defendersValue < 42; defendersValue++) {
 			defenders.add(values[defendersValue]);
 		}
 
 		LinkedList<String> markers = new LinkedList<>();
 
-		for (short markersValue = 41; markersValue < 43; markersValue++) {
+		for (short markersValue = 42; markersValue < 44; markersValue++) {
 			markers.add(values[markersValue]);
 		}
 
 		LinkedList<String> poachers = new LinkedList<>();
 
-		for (short poachersValue = 43; poachersValue < 48; poachersValue++) {
+		for (short poachersValue = 44; poachersValue < 49; poachersValue++) {
 			poachers.add(values[poachersValue]);
 		}
 
 		LinkedList<String> deflectors = new LinkedList<>();
 
-		for (short deflectorsValue = 48; deflectorsValue < 50; deflectorsValue++) {
+		for (short deflectorsValue = 49; deflectorsValue < 51; deflectorsValue++) {
 			deflectors.add(values[deflectorsValue]);
 		}
 
 		LinkedList<String> dFoulers = new LinkedList<>();
 
-		for (short dFoulerValue = 54; dFoulerValue < 56; dFoulerValue++) {
+		for (short dFoulerValue = 54; dFoulerValue < 57; dFoulerValue++) {
 			dFoulers.add(values[dFoulerValue]);
 		}
 
@@ -434,8 +434,8 @@ public class StringConverters {
 
 		Coordinate location1Yards = new Coordinate(parseDoubleWithNA(values[99]), parseDoubleWithNA(values[101]));
 		Coordinate location2Yards = new Coordinate(parseDoubleWithNA(values[100]), parseDoubleWithNA(values[102]));
-		Coordinate throwDistance = new Coordinate(parseDoubleWithNA(values[106]), parseDoubleWithNA(values[107]));
-		Coordinate throwVector = new Coordinate(parseDoubleWithNA(values[108]), parseDoubleWithNA(values[109]));
+		Coordinate throwDistance = new Coordinate(parseDoubleWithNA(values[107]), parseDoubleWithNA(values[108]));
+		Coordinate throwVector = new Coordinate(parseDoubleWithNA(values[109]), parseDoubleWithNA(values[110]));
 		Coordinate pullCoordinates = new Coordinate(parseDoubleWithNA(values[112]), parseDoubleWithNA(values[113]));
 		LinkedList<ForceDirection> mainForcePossession = new LinkedList<ForceDirection>();
 		for (ForceDirection forceDirection : ForceDirection.values()) {
