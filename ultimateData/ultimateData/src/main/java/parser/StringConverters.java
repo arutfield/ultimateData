@@ -406,7 +406,7 @@ public class StringConverters {
 		}
 
 		String player1Id = findPlayerIdByPull(values, true, values[11].equals("Pull Received"));
-		String player2Id = findPlayerIdByPull(values, false, values[14].equals("Pull Received"));
+		String player2Id = findPlayerIdByPull(values, false, values[11].equals("Pull Received"));
 
 		RawDataEnums.YesNoNA defendingTeamDLine = RawDataEnums.YesNoNA.NA;
 		switch (values[95]) {
@@ -439,13 +439,13 @@ public class StringConverters {
 		Coordinate pullCoordinates = new Coordinate(parseDoubleWithNA(values[112]), parseDoubleWithNA(values[113]));
 		LinkedList<ForceDirection> mainForcePossession = new LinkedList<ForceDirection>();
 		for (ForceDirection forceDirection : ForceDirection.values()) {
-			if (values[126].toLowerCase().contains(forceDirection.toString().toLowerCase()))
+			if (values[126].replaceAll("-", "").toLowerCase().contains(forceDirection.toString().toLowerCase()))
 				mainForcePossession.add(forceDirection);
 		}
 
 		LinkedList<ForceDirection> mainForcePossessionDirection = new LinkedList<ForceDirection>();
 		for (ForceDirection forceDirection : ForceDirection.values()) {
-			if (values[127].toLowerCase().contains(forceDirection.toString().toLowerCase()))
+			if (values[127].replaceAll("-", "").toLowerCase().contains(forceDirection.toString().toLowerCase()))
 				mainForcePossessionDirection.add(forceDirection);
 		}
 		
@@ -492,7 +492,6 @@ public class StringConverters {
 	}
 
 	private static String findPlayerIdByPull(String[] values, boolean isPlayer1, boolean isPull) {
-		//System.out.println(values[51] + ", " + values[52] + ", " + values[53] + ", " + values[54]);
 		if (isPull)
 			if (isPlayer1)
 				return values[51];

@@ -270,6 +270,10 @@ public class RawData {
 		return component2.gameClockEstimate;
 	}
 
+	public Double getDurationEventEstimate() {
+		return component2.durationEventEstimate;
+	}
+
 	public Short getDurationPointEstimate() {
 		return component2.durationPointEstimate;
 	}

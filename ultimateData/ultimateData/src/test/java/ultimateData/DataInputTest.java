@@ -45,11 +45,30 @@ public class DataInputTest {
 		assertEquals(isOffenseTarget, team.isOffense());
 	}
 
-	public void checkWeather(Weather weather, Double desiredTemperature, Double desiredWindSpeed, Double desiredWindDirection, Double desiredPrecipitation, RawDataEnums.YesNoNA desiredAnyPrecipitation) {
-		assertEquals(desiredTemperature, weather.getTemperature(), 0.001);
-		assertEquals(desiredWindSpeed, weather.getWindSpeed(), 0.001);
-		assertEquals(desiredWindDirection, weather.getWindDirection());
-		assertEquals(desiredPrecipitation, weather.getPrecipitation());
+	private <T> void checkList(LinkedList<T> desiredStringList, T[] strings) {
+		assertEquals(desiredStringList.size(), strings.length);
+		for (int i=0; i<desiredStringList.size(); i++)
+			assertEquals(desiredStringList.get(i), strings[i]);		
+	}
+
+	
+	private void checkWeather(Weather weather, Double desiredTemperature, Double desiredWindSpeed, Double desiredWindDirection, Double desiredPrecipitation, RawDataEnums.YesNoNA desiredAnyPrecipitation) {
+		if (desiredTemperature == null)
+			assertNull(weather.getTemperature());
+		else
+			assertEquals(desiredTemperature, weather.getTemperature(), 0.001);
+		if (desiredWindSpeed == null)
+			assertNull(weather.getWindSpeed());
+		else
+			assertEquals(desiredWindSpeed, weather.getWindSpeed(), 0.001);
+		if (desiredWindDirection == null)
+			assertNull(weather.getWindDirection());
+		else
+			assertEquals(desiredWindDirection, weather.getWindDirection(), 0.001);
+		if (desiredPrecipitation == null)
+			assertNull(weather.getPrecipitation());
+		else
+			assertEquals(desiredPrecipitation, weather.getPrecipitation(), 0.001);
 		assertEquals(desiredAnyPrecipitation, weather.getAnyPrecipitation());
 	}
 	
@@ -291,7 +310,7 @@ public class DataInputTest {
 		assertEquals(25, (short) rawData.getHomeScoreEndofGame());
 		assertEquals(21, (short) rawData.getAwayScoreEndofGame());
 		assertEquals(RawDataEnums.HomeTeamOutcome.Win, rawData.getHomeTeamGameOutcome());
-		assertEquals(3, rawData.getDurationPointEstimate(), 0.001);
+		assertEquals(3, rawData.getDurationEventEstimate(), 0.001);
 		assertEquals(0, rawData.getGameClockEstimate(), 0.001);
 		assertEquals(3, rawData.getDurationPointEstimate(), 0.001);
 		assertEquals(2160, rawData.getTimeRemainingRegularGame(), 0.001);
@@ -337,11 +356,103 @@ public class DataInputTest {
 		assertEquals(DefenseScheme.Zone, rawData.getdSchemePossession());
 	}
 
-	private <T> void checkList(LinkedList<T> desiredStringList, T[] strings) {
-		assertEquals(desiredStringList.size(), strings.length);
-		for (int i=0; i<desiredStringList.size(); i++)
-			assertEquals(desiredStringList.get(i), strings[i]);
-		
+	@Test
+	public void testRawDataLine164() throws NumberFormatException, BadEnumException, ParseException {
+		String sampleString = "7/24/21: Outlaws vs. Rush,Outlaws,Rush,CFL,9,8,none,Q2,0:10:49,none,Rush,Pull Received,29,0.143718773,0.444617501,27,0.785775253,0.474521303,N/S (gap in video),Normal/In-Bounds,none,none,none,none,none,none,none,none,7/24/2021,NA,NA,NA,NA,Outlaws,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,cturner,nhirst,NA,NA,NA,NA,NA,NA,khunter,mobrien,badibe,brobinson,cturner,rtoogood,dbenvenut,acarroll,lcomire,mmackenzi,nhirst,jhuynh,dlafrance,wlewis,Ottawa,NA,Yes,1,-1,0,23,19,1,1,17,13,W,6,0:10:49,14,2089,649,30+ sec,11,0,O-Line,D-Line,D-Line,O-Line,Away,29.42126773,27.94252489,-0.345860792,67.48256974,70.34586079,2.51743026,2.754601068,1.275858221,1.478742847,67.82843053,-1.478742847,67.82843053,Downfield,25.39080845,6.648878611,1.269191554,63.35112139,NA,0,0,0,0,0,0,0,none,NA,None Right Straight-Up,Right Straight-Up,-88.75107969,NA,FALSE,FALSE,TRUE,Person";
+		String[] values = sampleString.split(",");
+		RawData rawData = StringConverters.convertToRawData(values);
+		assertEquals(RawDataEnums.DefenseScheme.None, rawData.getDefenseScheme());
+		assertEquals("rush", rawData.getTeamId());
+		assertEquals(RawDataEnums.EventType.PullReceived, rawData.getEventType());
+		assertEquals("cturner", rawData.getPlayer1Id());
+		checkCoordinates(rawData.getLocation1(), 0.143719, 0.4446618);
+		assertEquals("nhirst", rawData.getPlayer2Id());
+		checkCoordinates(rawData.getLocation2(), 0.785775, 0.474521);
+		assertNull(rawData.getPullTime());
+		assertEquals(RawDataEnums.PullInfo.Normal, rawData.getPullInfo());
+		assertEquals(RawDataEnums.DefenderDistance.None, rawData.getClosestDefenderDistance());
+		assertEquals(RawDataEnums.Force.None, rawData.getForce());
+		assertEquals(RawDataEnums.PassType.None, rawData.getPassType());
+		assertEquals(RawDataEnums.BrokeMark.None, rawData.getBrokeMark());
+		assertEquals(RawDataEnums.PassBreak.None, rawData.getPassBreak());
+		assertEquals(RawDataEnums.TurnoverType.None, rawData.getTurnoverType());
+		assertEquals(RawDataEnums.BlockType.None, rawData.getBlockType());
+		assertEquals(RawDataEnums.FoulSide.None, rawData.getFoulSide());
+		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+		Date actualDate = formatter.parse("07/24/2021");
+		assertEquals(actualDate, rawData.getGameDate());
+		checkWeather(rawData.getWeather(), null, null, null, null, RawDataEnums.YesNoNA.NA);
+		assertEquals("outlaws", rawData.getDefendingTeamId());
+		assertEquals("NA", rawData.getThrowerId());
+		assertEquals("NA", rawData.getTargetedReceiverId());
+		checkList(rawData.getClosestDefenders(), new String[] {"NA", "NA", "NA", "NA", "NA", "NA"});
+		checkList(rawData.getMarkers(), new String[] {"NA", "NA"});
+		checkList(rawData.getPoachers(), new String[] {"NA", "NA", "NA", "NA", "NA"});
+		checkList(rawData.getDeflectors(), new String[] {"NA", "NA"});
+		assertEquals("cturner", rawData.getPullThrowerId());
+		assertEquals("nhirst", rawData.getPullReceiverId());
+		assertEquals("NA", rawData.getoFoulerId());
+		checkList(rawData.getdFoulerIds(), new String[] {"NA", "NA", "NA"});
+		assertEquals("NA", rawData.getoFouledId());
+		assertEquals("NA", rawData.getdFouledId());
+		assertEquals(new String[] {"khunter", "mobrien", "badibe", "brobinson", "cturner", "rtoogood", "dbenvenut"}, rawData.getHomePlayerIds());
+		assertEquals(new String[] {"acarroll", "lcomire", "mmackenzi", "nhirst", "jhuynh", "dlafrance", "wlewis"}, rawData.getAwayPlayerIds());
+		assertEquals("Ottawa", rawData.getHomeTeamLocation());
+		assertEquals(true, rawData.isFieldCflType());
+		assertEquals(1, (short) rawData.getHomeAwayDifferential());
+		assertEquals(-1, (short) rawData.getOffenseDefenseDifferential());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.isRegulationDone());
+		assertEquals(23, (short) rawData.getPossessionNumber());
+		assertEquals(19, (short) rawData.getPointNumber());
+		assertEquals(RawDataEnums.TeamScored.Yes, rawData.getTeamScoredOnPoint());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.isTeamScoredOnPossession());
+		assertEquals(17, (short) rawData.getHomeScoreEndofGame());
+		assertEquals(13, (short) rawData.getAwayScoreEndofGame());
+		assertEquals(RawDataEnums.HomeTeamOutcome.Win, rawData.getHomeTeamGameOutcome());
+		assertEquals(6, rawData.getDurationEventEstimate(), 0.001);
+		assertEquals(649, rawData.getGameClockEstimate(), 0.001);
+		assertEquals(14, rawData.getDurationPointEstimate(), 0.001);
+		assertEquals(2089, rawData.getTimeRemainingRegularGame(), 0.001);
+		assertEquals(649, rawData.getTimeRemainingQuarter(), 0.001);
+		assertEquals(RawDataEnums.QGroupTimeRemaining.OverThirty, rawData.getTimeRemainingQGroup());
+		assertEquals(11, (short) rawData.getNumberThrowOfQuarter());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getLastThrowOfQuarter());
+		assertEquals(true, rawData.isoTeamLine());
+		assertEquals(RawDataEnums.YesNoNA.Yes, rawData.getDefendingTeamLineDLine());
+		assertEquals(false, rawData.isHomeTeamOLine());
+		assertEquals(false, rawData.isAwayTeamDLine());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getOffenseHome());
+		checkCoordinates(rawData.getLocation1Yards(), 29.42127, -0.34586);
+		checkCoordinates(rawData.getLocation2Yards(), 27.94252, 67.48257);
+		assertEquals(70.34586, (double) rawData.getLocation1YardsToEndzone(), 0.001);
+		assertEquals(2.51743, (double) rawData.getLocation2YardsToEndzone(), 0.001);
+		assertEquals(2.754601, (double) rawData.getLocation1YardsFromMiddle(), 0.001);
+		assertEquals(1.275858, (double) rawData.getLocation2YardsFromMiddle(), 0.001);
+		checkCoordinates(rawData.getThrowDistance(), 1.478743, 67.82843);
+		checkCoordinates(rawData.getThrowVector(), -1.47874, 67.82843);
+		assertEquals(rawData.getThrowDirectionCategory(), RawDataEnums.ThrowDirectionEnum.Downfield);
+		checkCoordinates(rawData.getPullCoordinates(), 25.39081, 6.648879);
+		assertEquals(1.269192, rawData.getPullYardsFromMiddle(), 0.001);
+		assertEquals(63.35112, rawData.getPullYDistance(), 0.001);
+		assertEquals(RawDataEnums.YesNoNA.NA, rawData.getCompletedPass());
+		assertEquals(RawDataEnums.YesNoNA.No, rawData.getScoringPass());
+		assertEquals(0, (short) rawData.getThrowNumberInPossession());
+		assertEquals(0, (short) rawData.getThrowNumberInPoint());
+		//Component 4
+		assertEquals(0, (byte) rawData.getNumberOfMarkers());
+		assertEquals(0, (byte) rawData.getNumberOfMarkersPlusPoachers());
+		assertEquals(0, (byte) rawData.getNumberOfPoachers());
+		assertEquals(0, (byte) rawData.getNumberOfClosestDefenders());
+		assertEquals(RawDataEnums.ClosestDefenderTight.None, rawData.getClosestDefenderTight());
+		assertEquals(RawDataEnums.ForceDirection.NA, rawData.getForceDirection());
+		checkList(rawData.getMainForcePossession(), new RawDataEnums.ForceDirection[] {RawDataEnums.ForceDirection.None, RawDataEnums.ForceDirection.Right, RawDataEnums.ForceDirection.StraightUp});
+		checkList(rawData.getMainForcePossessionDirection(), new RawDataEnums.ForceDirection[] {RawDataEnums.ForceDirection.Right, RawDataEnums.ForceDirection.StraightUp});
+		assertEquals(-88.7511, (double) rawData.getThrowAngle(), 0.001);
+		assertEquals(RawDataEnums.YesNoNA.NA, rawData.getOverheadThrow());
+		assertEquals(false, rawData.isAnyZoneDOnPossession());
+		assertEquals(false, rawData.isAnyMixedDOnPossession());
+		assertEquals(true, rawData.isAnyPersonDOnPossession());
+		assertEquals(DefenseScheme.Person, rawData.getdSchemePossession());
 	}
 
 
