@@ -19,6 +19,7 @@ import parser.StringConverters.PlayerGameEnum;
 import parser.StringConverters.TeamStatsEnum;
 
 public class Records {
+
 	private static final Logger logger = LogManager.getLogger(Records.class);
 	private static final LinkedList<Player> playerRecords = new LinkedList<Player>();
 	private static final LinkedList<Game> gameRecords = new LinkedList<Game>();
@@ -60,13 +61,17 @@ public class Records {
 		}
 	}
 
+	//add games to a player
 	public static void loadPlayerGameStatsAdvanced()
 			throws FileNotFoundException, IOException, WrongSizeRowException, BadEnumException {
 		boolean seenHeaderLinePlayer = false;
+		for (Player player : playerRecords) {
+			if (player.getPlayerId().equals("cbrock"))
+				System.out.println("here start: found cbrock");
+		}
 		try (BufferedReader br = new BufferedReader(new FileReader("../playergamestatsADV.csv"))) {
 			String line;
 			String lastId = null;
-			Player player = null;
 			while ((line = br.readLine()) != null) {
 				if (!seenHeaderLinePlayer) {
 					seenHeaderLinePlayer = true;
@@ -75,25 +80,30 @@ public class Records {
 				logger.debug(line);
 				String[] values = line.split(",");
 				String playerId = values[PlayerGameEnum.playerId.getValue()];
-				if (!playerId.equals(lastId)) {
-					if (player != null) {
-						playerRecords.add(player);
+				Player player = null;
+				//if this isn't the last player
+				boolean alreadyHavePlayer = false;
+				for (Player currentPlayer : playerRecords ) {
+					if (currentPlayer.getPlayerId().equals(playerId)) {
+						alreadyHavePlayer = true;
+						player = currentPlayer;
 					}
-					boolean playerFound = false;
-					for (Player recordedPlayer : playerRecords) {
-						if (recordedPlayer.getPlayerId().equals(playerId)) {
-							player = recordedPlayer;
-							playerFound = true;
-						}
-					}
-					if (!playerFound)
-						player = new Player(playerId);
-					lastId = playerId;
+				}
+				if (!alreadyHavePlayer) {
+					player = new Player(playerId);
+					logger.error("added new player " + player.getPlayerId());
+					playerRecords.add(player);
 				}
 
 				player.addGame(StringConverters.convertToPlayerGame(values));
 			}
 		}
+		
+		for (Player player : playerRecords) {
+			if (player.getPlayerId().equals("cbrock"))
+				System.out.println("here: found cbrock");
+		}
+
 
 	}
 
@@ -131,6 +141,16 @@ public class Records {
 	}
 
 	public static void loadPlayerSeasonStats() throws FileNotFoundException, IOException {
+		int count = 0;
+		int countCheck1 = 0;
+		for (Player player : getPlayerRecords()) {
+			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
+				countCheck1++;
+			}
+		}
+		System.out.println("counted seasons start: " + countCheck1);
+
+		
 		try (BufferedReader br = new BufferedReader(new FileReader("../playerseasonstats.csv"))) {
 			String line;
 			boolean seenHeaderLine = false;
@@ -141,28 +161,61 @@ public class Records {
 					continue;
 				}
 				String[] values = line.split(",");
-				logger.debug(line);
+				logger.error(line);
 				PlayerSeason playerSeason = StringConverters.convertToPlayerSeason(values);
 				String playerId = values[PlayerGameEnum.playerId.getValue()];
 				// see if it already exists
 				boolean playerFound = false;
 				for (Player recordedPlayer : playerRecords) {
 					if (recordedPlayer.getPlayerId().equals(playerId)) {
+						logger.error("adding to existing player " + recordedPlayer.getPlayerId());
 						playerFound = true;
 						recordedPlayer.addSeason(playerSeason);
+						//int countAll = checkTotalSeasons();
+						//System.out.println(countAll);
+						//count++;
+						//if (countAll > count) {
+						//	throw new IOException("NOOO");
+						//}
 						break;
 					}
 				}
 				if (!playerFound) {
 					Player newPlayer = new Player(playerId);
+					logger.error("adding new player " + newPlayer.getPlayerId());
 					newPlayer.addSeason(playerSeason);
+					count++;
 					playerRecords.add(newPlayer);
 				}
 			}
 		}
+		
+		for (Player player : playerRecords) {
+			if (player.getPlayerId().equals("cbrock"))
+				System.out.println("found cbrock");
+		}
 
 	}
 
+	public static int checkTotalSeasons() {
+		int countCheck = 0;
+		int playerCheck = 0;
+		for (Player player : getPlayerRecords()) {
+			logger.error("checking player " + player.getPlayerId());
+			playerCheck++;
+			int seasonCheck = 0;
+			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
+				seasonCheck++;
+				countCheck++;
+			}
+			if (seasonCheck > 0)
+				System.out.println("season check for " + player.getPlayerId() + " is " + seasonCheck + " (total " + countCheck + ")");
+		}
+		System.out.println("counted players : " + playerCheck);
+		System.out.println("counted seasons : " + countCheck);
+		return countCheck;
+	}
+	
 	public static void loadTeamStats() throws IOException {
 		// add teams
 		try (BufferedReader br = new BufferedReader(new FileReader("../teamStats.csv"))) {

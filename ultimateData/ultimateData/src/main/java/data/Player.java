@@ -60,6 +60,10 @@ public class Player {
 	public LinkedList<PlayerGame> getPlayerGameList() {
 		return playerGameList;
 	}
+
+	public LinkedList<PlayerSeason> getPlayerSeasonList() {
+		return playerSeasonList;
+	}
 	
 	public void addGame(PlayerGame event) {
 		playerGameList.add(event);
@@ -71,6 +75,18 @@ public class Player {
 	
 	public void calculateStats() {
 		
+	}
+	
+	public boolean hasMultipleTeams() {
+		String firstTeam = "";
+		for (PlayerSeason season : playerSeasonList) {
+			if (firstTeam.length() == 0)
+				firstTeam = season.getTeamID();
+			else
+				if (firstTeam.equals(season.getTeamID()))
+					return true;
+		}
+		return false;
 	}
 
 }

@@ -1,6 +1,7 @@
 package data;
 
 public class PlayerSeason {
+	private final String playerId;
 	private final short year;
 	private final String teamID;
 	private final short games;
@@ -33,14 +34,17 @@ public class PlayerSeason {
 	private final short oOpportunityScores;
 	private final short dOpportunities;
 	private final short dOpportunityStops;
+	private final Double oPointsRatio;
+	private final Double dPointsRatio;
 
-	public PlayerSeason(short year, String teamID, short games, short assists, short goals,
+	public PlayerSeason(String playerId, short year, String teamID, short games, short assists, short goals,
 			short hockeyAssists, short completions, short throwAttempts, short throwaways, short stalls,
 			short callahansThrown, short yardsReceived, short yardsThrown, short hucksAttempted, short hucksCompleted,
 			short catches, short drops, short blocks, short callahans, short pulls, short obPulls, short recordedPulls,
 			int recordedPullsHangtime, short oPointsPlayed, short oPointsScored, short dPointsPlayed,
 			short dPointsScored, int secondsPlayed, short oOpportunities, short oOpportunityScores,
 			short dOpportunities, short dOpportunityStops) {
+		this.playerId = playerId;
 		this.year = year;
 		this.teamID = teamID;
 		this.games = games;
@@ -73,8 +77,14 @@ public class PlayerSeason {
 		this.oOpportunityScores = oOpportunityScores;
 		this.dOpportunities = dOpportunities;
 		this.dOpportunityStops = dOpportunityStops;
+		this.oPointsRatio = (oPointsPlayed == 0) ? null : (double) oPointsScored/(double) oPointsPlayed;
+		this.dPointsRatio = (dPointsPlayed == 0) ? null : (double) dPointsScored/(double) dPointsPlayed;
 	}
 
+	public String getPlayerId() {
+		return playerId;
+	}
+	
 	public short getYear() {
 		return year;
 	}
@@ -203,6 +213,14 @@ public class PlayerSeason {
 
 	public short getdOpportunityStops() {
 		return dOpportunityStops;
+	}
+
+	public Double getoPointsRatio() {
+		return oPointsRatio;
+	}
+
+	public Double getdPointsRatio() {
+		return dPointsRatio;
 	}
 
 }

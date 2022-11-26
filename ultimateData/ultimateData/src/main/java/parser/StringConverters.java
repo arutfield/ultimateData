@@ -284,7 +284,7 @@ public class StringConverters {
 	}
 
 	public static PlayerSeason convertToPlayerSeason(String[] values) {
-		return new PlayerSeason(Short.parseShort(values[PlayerSeasonEnum.year.value]),
+		return new PlayerSeason(values[PlayerSeasonEnum.playerID.value], Short.parseShort(values[PlayerSeasonEnum.year.value]),
 				values[PlayerSeasonEnum.teamID.value], Short.parseShort(values[PlayerSeasonEnum.games.value]),
 				Short.parseShort(values[PlayerSeasonEnum.assists.value]),
 				Short.parseShort(values[PlayerSeasonEnum.goals.value]),
