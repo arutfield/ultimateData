@@ -1,6 +1,7 @@
 package data;
 
 public class PlayerSeason {
+	private static final double percentOLineScored = 0.739685658153241;
 	private final String playerId;
 	private final short year;
 	private final String teamID;
@@ -36,7 +37,9 @@ public class PlayerSeason {
 	private final short dOpportunityStops;
 	private final Double oPointsRatio;
 	private final Double dPointsRatio;
-
+	private final Double overallRatio;
+	private final Double percentOffense;
+	
 	public PlayerSeason(String playerId, short year, String teamID, short games, short assists, short goals,
 			short hockeyAssists, short completions, short throwAttempts, short throwaways, short stalls,
 			short callahansThrown, short yardsReceived, short yardsThrown, short hucksAttempted, short hucksCompleted,
@@ -79,6 +82,8 @@ public class PlayerSeason {
 		this.dOpportunityStops = dOpportunityStops;
 		this.oPointsRatio = (oPointsPlayed == 0) ? null : (double) oPointsScored/(double) oPointsPlayed;
 		this.dPointsRatio = (dPointsPlayed == 0) ? null : (double) dPointsScored/(double) dPointsPlayed;
+		this.overallRatio = (double) (oPointsScored + ((double) dPointsScored) * percentOLineScored / (1.0 - percentOLineScored)) / (double) (oPointsPlayed + dPointsPlayed);
+		this.percentOffense = (double) (oPointsPlayed) / (double) (oPointsPlayed + dPointsPlayed);
 	}
 
 	public String getPlayerId() {
@@ -221,6 +226,14 @@ public class PlayerSeason {
 
 	public Double getdPointsRatio() {
 		return dPointsRatio;
+	}
+	
+	public Double getOverallRatio() {
+		return overallRatio;
+	}
+	
+	public Double getPercentOffense() {
+		return percentOffense;
 	}
 
 }
