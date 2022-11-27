@@ -65,13 +65,8 @@ public class Records {
 	public static void loadPlayerGameStatsAdvanced()
 			throws FileNotFoundException, IOException, WrongSizeRowException, BadEnumException {
 		boolean seenHeaderLinePlayer = false;
-		for (Player player : playerRecords) {
-			if (player.getPlayerId().equals("cbrock"))
-				System.out.println("here start: found cbrock");
-		}
 		try (BufferedReader br = new BufferedReader(new FileReader("../playergamestatsADV.csv"))) {
 			String line;
-			String lastId = null;
 			while ((line = br.readLine()) != null) {
 				if (!seenHeaderLinePlayer) {
 					seenHeaderLinePlayer = true;
@@ -98,12 +93,6 @@ public class Records {
 				player.addGame(StringConverters.convertToPlayerGame(values));
 			}
 		}
-		
-		for (Player player : playerRecords) {
-			if (player.getPlayerId().equals("cbrock"))
-				System.out.println("here: found cbrock");
-		}
-
 
 	}
 
@@ -141,16 +130,6 @@ public class Records {
 	}
 
 	public static void loadPlayerSeasonStats() throws FileNotFoundException, IOException {
-		int count = 0;
-		int countCheck1 = 0;
-		for (Player player : getPlayerRecords()) {
-			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
-				countCheck1++;
-			}
-		}
-		System.out.println("counted seasons start: " + countCheck1);
-
-		
 		try (BufferedReader br = new BufferedReader(new FileReader("../playerseasonstats.csv"))) {
 			String line;
 			boolean seenHeaderLine = false;
@@ -171,12 +150,6 @@ public class Records {
 						logger.error("adding to existing player " + recordedPlayer.getPlayerId());
 						playerFound = true;
 						recordedPlayer.addSeason(playerSeason);
-						//int countAll = checkTotalSeasons();
-						//System.out.println(countAll);
-						//count++;
-						//if (countAll > count) {
-						//	throw new IOException("NOOO");
-						//}
 						break;
 					}
 				}
@@ -184,36 +157,11 @@ public class Records {
 					Player newPlayer = new Player(playerId);
 					logger.error("adding new player " + newPlayer.getPlayerId());
 					newPlayer.addSeason(playerSeason);
-					count++;
 					playerRecords.add(newPlayer);
 				}
 			}
 		}
 		
-		for (Player player : playerRecords) {
-			if (player.getPlayerId().equals("cbrock"))
-				System.out.println("found cbrock");
-		}
-
-	}
-
-	public static int checkTotalSeasons() {
-		int countCheck = 0;
-		int playerCheck = 0;
-		for (Player player : getPlayerRecords()) {
-			logger.error("checking player " + player.getPlayerId());
-			playerCheck++;
-			int seasonCheck = 0;
-			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
-				seasonCheck++;
-				countCheck++;
-			}
-			if (seasonCheck > 0)
-				System.out.println("season check for " + player.getPlayerId() + " is " + seasonCheck + " (total " + countCheck + ")");
-		}
-		System.out.println("counted players : " + playerCheck);
-		System.out.println("counted seasons : " + countCheck);
-		return countCheck;
 	}
 	
 	public static void loadTeamStats() throws IOException {

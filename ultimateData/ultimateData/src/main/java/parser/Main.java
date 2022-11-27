@@ -30,8 +30,23 @@ import parser.StringConverters.PlayerGameEnum;
 import parser.StringConverters.TeamStatsEnum;
 
 public class Main {
+	private static class Ratios {
+		int countOLineScores = 0;
+		int countTotalScores = 0;
+		int countHomeLineScores = 0;
+		int homeOLineScoresCount = 0;
+		int homeDLineScoresCount = 0;
+		int awayOLineScoresCount = 0;
+		int awayDLineScoresCount = 0;
+		double offenseScoreRatio;
+		double homeScoreRatio;
+		Ratios(){
+			
+		}
+	}
 	private static final Logger logger = LogManager.getLogger(Main.class);
-
+	private static final Ratios mainRatios = new Ratios();
+	
 	public static void main(String[] args)
 			throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException {
 
@@ -59,7 +74,6 @@ public class Main {
 		// rearrange players by o ratio
 		LinkedList<PlayerSeason> playerSeasonsSortedOverall = new LinkedList<>();
 		for (Player player : Records.getPlayerRecords()) {
-			String playerId = player.getPlayerId();
 			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
 				if (playerSeason.getoPointsRatio() == null)
 					continue;
@@ -81,51 +95,19 @@ public class Main {
 			}
 		}
 
-		int countOLineScores = 0;
-		int countTotalScores = 0;
-		int countHomeLineScores = 0;
-		int homeOLineScoresCount = 0;
-		int homeDLineScoresCount = 0;
-		int awayOLineScoresCount = 0;
-		int awayDLineScoresCount = 0;
-		for (RawData rawData : Records.getRawDataRecords()) {
-			if (rawData.getScoringPass() == RawDataEnums.YesNoNA.Yes) {
-				if (rawData.getOffenseHome() == RawDataEnums.YesNoNA.NA)
-					throw new IOException("shouldn't be here");
-				countTotalScores++;
-				if (rawData.getOffenseHome() == RawDataEnums.YesNoNA.Yes) {
-					countHomeLineScores++;
-					if (rawData.isHomeTeamOLine()) {
-						countOLineScores++;
-						homeOLineScoresCount++;
-					} else {
-						homeDLineScoresCount++;
-					}
-				} else {
-					if (!rawData.isAwayTeamDLine()) {
-						countOLineScores++;
-						awayOLineScoresCount++;
-					} else {
-						awayDLineScoresCount++;
-					}
-				}
-			}
-		}
-		double offenseScoreRatio = (double) (countOLineScores) / (double) (countTotalScores);
-		double homeScoreRatio = (double) (countHomeLineScores) / (double) (countTotalScores);
-		logger.info("Total scores " + countTotalScores + ", O scores: " + countOLineScores + ", ratio: " + offenseScoreRatio);
+		calculateScoringRatios();
 		
 		LinkedList<String[]> csvData = new LinkedList<>();
-		csvData.add(new String[] {"Total scores:", Integer.toString(countTotalScores), "O scores: ", Integer.toString(countOLineScores), "ratio: ", Double.toString(offenseScoreRatio)});
-		csvData.add(new String[] {"Total scores:", Integer.toString(countTotalScores), "Home scores: ", Integer.toString(countHomeLineScores), "ratio: ", Double.toString(homeScoreRatio)});
-		csvData.add(new String[] {"O Home scores ratio", Double.toString(((double) homeOLineScoresCount) / (double) countTotalScores)});
-		csvData.add(new String[] {"O Away scores ratio", Double.toString(((double) awayOLineScoresCount) / (double) countTotalScores)});
-		csvData.add(new String[] {"D Home scores ratio", Double.toString(((double) homeDLineScoresCount) / (double) countTotalScores)});
-		csvData.add(new String[] {"D Away scores ratio", Double.toString(((double) awayDLineScoresCount) / (double) countTotalScores)});
-		csvData.add(new String[] { "Player ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio", "oPointsPlayed",
+		csvData.add(new String[] {"Total scores:", Integer.toString(mainRatios.countTotalScores), "O scores: ", Integer.toString(mainRatios.countOLineScores), "ratio: ", Double.toString(mainRatios.offenseScoreRatio)});
+		csvData.add(new String[] {"Total scores:", Integer.toString(mainRatios.countTotalScores), "Home scores: ", Integer.toString(mainRatios.countHomeLineScores), "ratio: ", Double.toString(mainRatios.homeScoreRatio)});
+		csvData.add(new String[] {"O Home scores ratio", Double.toString(((double) mainRatios.homeOLineScoresCount) / (double) mainRatios.countTotalScores)});
+		csvData.add(new String[] {"O Away scores ratio", Double.toString(((double) mainRatios.awayOLineScoresCount) / (double) mainRatios.countTotalScores)});
+		csvData.add(new String[] {"D Home scores ratio", Double.toString(((double) mainRatios.homeDLineScoresCount) / (double) mainRatios.countTotalScores)});
+		csvData.add(new String[] {"D Away scores ratio", Double.toString(((double) mainRatios.awayDLineScoresCount) / (double) mainRatios.countTotalScores)});
+		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio", "oPointsPlayed",
 				"dPointsPlayed", "Percent Offense" });
 		for (PlayerSeason season : playerSeasonsSortedOverall) {
-			csvData.add(new String[] { season.getPlayerId(), Short.toString(season.getYear()),
+			csvData.add(new String[] { season.getPlayerId(), season.getTeamID(), Short.toString(season.getYear()),
 					season.getOverallRatio().toString(),
 					season.getoPointsRatio().toString(),
 					season.getdPointsRatio() == null ? "" : season.getdPointsRatio().toString(),
@@ -133,12 +115,53 @@ public class Main {
 					Double.toString(season.getPercentOffense())});
 		}
 
-		// default all fields are enclosed in double quotes
-		// default separator is a comma
-		try (CSVWriter writer = new CSVWriter(new FileWriter("test.csv"))) {
-			writer.writeAll(csvData);
-		}
-		System.out.println("DONE");
+		exportToCsv(csvData);
 	}
 
+	private static void exportToCsv(LinkedList<String[]> csvContent) {
+		// default all fields are enclosed in double quotes
+		// default separator is a comma
+		String filename = "results_";
+		int attemptsMade = 0;
+		while (true) {
+			try (CSVWriter writer = new CSVWriter(new FileWriter(filename + attemptsMade + ".csv"))) {
+				writer.writeAll(csvContent);
+				break;
+			} catch (Exception ex) {
+				logger.error(ex.getMessage());
+				attemptsMade++;
+			}
+		}
+		System.out.println("DONE");
+
+	}
+	
+	private static void calculateScoringRatios() throws IOException {
+		for (RawData rawData : Records.getRawDataRecords()) {
+			if (rawData.getScoringPass() == RawDataEnums.YesNoNA.Yes) {
+				if (rawData.getOffenseHome() == RawDataEnums.YesNoNA.NA)
+					throw new IOException("shouldn't be here");
+				mainRatios.countTotalScores++;
+				if (rawData.getOffenseHome() == RawDataEnums.YesNoNA.Yes) {
+					mainRatios.countHomeLineScores++;
+					if (rawData.isHomeTeamOLine()) {
+						mainRatios.countOLineScores++;
+						mainRatios.homeOLineScoresCount++;
+					} else {
+						mainRatios.homeDLineScoresCount++;
+					}
+				} else {
+					if (!rawData.isAwayTeamDLine()) {
+						mainRatios.countOLineScores++;
+						mainRatios.awayOLineScoresCount++;
+					} else {
+						mainRatios.awayDLineScoresCount++;
+					}
+				}
+			}
+		}
+		mainRatios.offenseScoreRatio = (double) (mainRatios.countOLineScores) / (double) (mainRatios.countTotalScores);
+		mainRatios.homeScoreRatio = (double) (mainRatios.countHomeLineScores) / (double) (mainRatios.countTotalScores);
+		logger.info("Total scores " + mainRatios.countTotalScores + ", O scores: " + mainRatios.countOLineScores + ", ratio: " + mainRatios.offenseScoreRatio);
+	}
 }
