@@ -50,12 +50,18 @@ public class Main {
 	public static void main(String[] args)
 			throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException {
 
+		Records.loadGames();
 		Records.loadAudlGameEvents();
 		Records.loadPlayerGameStatsAdvanced();
-		Records.loadGames();
 		Records.loadPlayerSeasonStats();
 		Records.loadTeamStats();
 		Records.loadRawData();
+		//once loaded, do post calculations
+		for (Player player : Records.getPlayerRecords()) {
+			for (PlayerSeason season : player.getPlayerSeasonList()) {
+				season.calculatePostSeasonStatistics();
+			}
+		}
 
 		for (Team team : Records.getTeamRecords()) {
 			logger.info("Found team " + team.getTeamId() + " with " + team.getTeamStats().size() + " seasons");
@@ -96,6 +102,7 @@ public class Main {
 		}
 
 		calculateScoringRatios();
+						
 		
 		LinkedList<String[]> csvData = new LinkedList<>();
 		csvData.add(new String[] {"Total scores:", Integer.toString(mainRatios.countTotalScores), "O scores: ", Integer.toString(mainRatios.countOLineScores), "ratio: ", Double.toString(mainRatios.offenseScoreRatio)});
@@ -105,14 +112,16 @@ public class Main {
 		csvData.add(new String[] {"D Home scores ratio", Double.toString(((double) mainRatios.homeDLineScoresCount) / (double) mainRatios.countTotalScores)});
 		csvData.add(new String[] {"D Away scores ratio", Double.toString(((double) mainRatios.awayDLineScoresCount) / (double) mainRatios.countTotalScores)});
 		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio", "oPointsPlayed",
-				"dPointsPlayed", "Percent Offense" });
+				"dPointsPlayed", "Percent Offense", "Average throw distance", "Average receive distance" });
 		for (PlayerSeason season : playerSeasonsSortedOverall) {
 			csvData.add(new String[] { season.getPlayerId(), season.getTeamID(), Short.toString(season.getYear()),
 					season.getOverallRatio().toString(),
 					season.getoPointsRatio().toString(),
 					season.getdPointsRatio() == null ? "" : season.getdPointsRatio().toString(),
 					Short.toString(season.getoPointsPlayed()), Short.toString(season.getdPointsPlayed()),
-					Double.toString(season.getPercentOffense())});
+					Double.toString(season.getPercentOffense()),
+					season.getAverageDistanceThrown() > 0 ? Double.toString(season.getAverageDistanceThrown()) : "",
+					season.getAverageDistanceReceived() > 0 ? Double.toString(season.getAverageDistanceReceived()) : ""});
 		}
 
 		exportToCsv(csvData);

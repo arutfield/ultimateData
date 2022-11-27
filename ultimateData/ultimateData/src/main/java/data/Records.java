@@ -31,8 +31,6 @@ public class Records {
 		boolean seenHeaderLine = false;
 		try (BufferedReader br = new BufferedReader(new FileReader("../AUDLGameEvents.csv"))) {
 			String line;
-			String lastId = null;
-			Game game = null;
 			while ((line = br.readLine()) != null) {
 				if (!seenHeaderLine) {
 					seenHeaderLine = true;
@@ -41,20 +39,17 @@ public class Records {
 				logger.debug(line);
 				String[] values = line.split(",");
 				String gameId = values[GameEventEnum.gameID.getValue()];
-				if (!gameId.equals(lastId)) {
-					if (game != null) {
-						gameRecords.add(game);
+				Game game = null;
+				boolean gameFound = false;
+				for (Game recordedGame : gameRecords) {
+					if (recordedGame.getId().equals(gameId)) {
+						game = recordedGame;
+						gameFound = true;
+						break;
 					}
-					boolean gameFound = false;
-					for (Game recordedGame : gameRecords) {
-						if (recordedGame.getId().equals(gameId)) {
-							game = recordedGame;
-							gameFound = true;
-						}
-					}
-					if (!gameFound)
-						game = new Game(gameId);
-					lastId = gameId;
+				}
+				if (!gameFound) {
+					game = new Game(gameId);
 				}
 				game.addEvent(StringConverters.convertToEvent(values));
 			}
@@ -126,7 +121,7 @@ public class Records {
 				}
 			}
 		}
-
+		System.out.println("games found " + gameRecords.size());
 	}
 
 	public static void loadPlayerSeasonStats() throws FileNotFoundException, IOException {

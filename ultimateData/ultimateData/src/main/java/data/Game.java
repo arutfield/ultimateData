@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 public class Game {
 	private final String id;
+	private final int year;
 	private final LinkedList<Event> events;
 	private short homeScore;
 	private String homeTeam;
@@ -14,6 +15,8 @@ public class Game {
 	
 	public Game(String id) {
 		this.id = id;
+		String[] splitByDash = id.split("-");
+		this.year = Integer.valueOf(splitByDash[0]);
 		this.events = new LinkedList<Event>();
 	}
 
@@ -77,5 +80,9 @@ public class Game {
 		this.startTime = gameDetails.getTime();
 		this.week = gameDetails.getWeek();
 		
+	}
+
+	public int getYear() {
+		return this.year;
 	}
 }

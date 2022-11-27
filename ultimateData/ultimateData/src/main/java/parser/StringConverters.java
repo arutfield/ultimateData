@@ -155,6 +155,7 @@ public class StringConverters {
 				QuarterEnum.convertFromString(values[GameEventEnum.quarter.value]),
 				Integer.parseInt(values[GameEventEnum.quarterTime.value]), players, values[GameEventEnum.puller.value],
 				pullCoordinates, pullMs, values[GameEventEnum.thrower.value], throwerCoordinates, receiverCoordinates,
+				values[GameEventEnum.receiver.value],
 				throwDistance, values[GameEventEnum.defender.value], turnoverCoordinates,
 				Short.valueOf(values[GameEventEnum.index.value]));
 	}

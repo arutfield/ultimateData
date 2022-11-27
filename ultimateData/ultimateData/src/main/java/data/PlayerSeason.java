@@ -39,6 +39,9 @@ public class PlayerSeason {
 	private final Double dPointsRatio;
 	private final Double overallRatio;
 	private final Double percentOffense;
+	private double averageDistanceThrown = 0.0;
+	private double averageDistanceReceived = 0.0;
+	
 	
 	public PlayerSeason(String playerId, short year, String teamID, short games, short assists, short goals,
 			short hockeyAssists, short completions, short throwAttempts, short throwaways, short stalls,
@@ -234,6 +237,41 @@ public class PlayerSeason {
 	
 	public Double getPercentOffense() {
 		return percentOffense;
+	}
+	
+	public Double getAverageDistanceThrown() {
+		return averageDistanceThrown;
+	}
+
+	public Double getAverageDistanceReceived() {
+		return averageDistanceReceived;
+	}
+
+	public void calculatePostSeasonStatistics() {
+		double totalDistanceThrown = 0.0;
+		double totalDistanceReceived = 0.0;
+		int totalReceives = 0;
+		for (Game game : Records.getGameRecords()) {
+			if (game.getYear() != year)
+				continue;
+			for (Event event : game.getEvents()) {
+				if (event.getThrowDistance() == null || event.getThrowDistance().getMagnitude() == null) {
+					continue;
+				}
+				if (event.getThrower().equals(playerId)) {
+						totalDistanceThrown += event.getThrowDistance().getMagnitude();
+				} else {
+					if (event.getReceiver().equals(playerId)) {
+						totalReceives++;
+						totalDistanceReceived += event.getThrowDistance().getMagnitude();
+					}
+				}
+			}
+		}
+		if (this.throwAttempts != 0)
+			this.averageDistanceThrown = totalDistanceThrown / ((double) this.throwAttempts);
+		if (totalReceives != 0)
+			this.averageDistanceReceived = totalDistanceReceived / ((double) totalReceives);
 	}
 
 }

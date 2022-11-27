@@ -51,6 +51,7 @@ public class Event {
 	private final String thrower;
 	private final Coordinate throwerCoordinates;
 	private final Coordinate receiverCoordinates;
+	private final String receiver;
 	private final Coordinate throwDistance;
 	private final String defender;
 	private final Coordinate turnoverCoordinates;
@@ -63,7 +64,7 @@ public class Event {
 			byte pointNumber, byte possessionNumber, byte throwInPossession, byte homeTeamScore,
 			byte awayTeamScore, QuarterEnum quarter, Integer quarterTime, String[] players,
 			String puller, Coordinate pullCoordinates, Integer pullMs, String thrower,
-			Coordinate throwerCoordinates, Coordinate receiverCoordinates,
+			Coordinate throwerCoordinates, Coordinate receiverCoordinates, String receiver,
 			Coordinate throwDistance, String defender, Coordinate turnoverCoordinates, short index)
 	{
 		this.awayTeam = new gameTeam(awayTeam, true, (recordingTeam.equals(awayTeam)), (offenseTeam.equals(awayTeam)));
@@ -84,6 +85,7 @@ public class Event {
 		this.thrower = thrower;
 		this.throwerCoordinates = throwerCoordinates;
 		this.receiverCoordinates = receiverCoordinates;
+		this.receiver = receiver;
 		this.throwDistance = throwDistance;
 		this.defender = defender;
 		this.turnoverCoordinates = turnoverCoordinates;
@@ -159,6 +161,10 @@ public class Event {
 		return receiverCoordinates;
 	}
 
+	public String getReceiver() {
+		return receiver;
+	}
+	
 	public Coordinate getThrowDistance() {
 		return throwDistance;
 	}

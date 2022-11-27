@@ -409,7 +409,7 @@ public class RawData {
 	public LinkedList<RawDataEnums.ForceDirection> getMainForcePossession() {
 		return component4.mainForcePossession;
 	}
-	
+
 	public LinkedList<RawDataEnums.ForceDirection> getMainForcePossessionDirection() {
 		return component4.mainForcePossessionDirection;
 	}
