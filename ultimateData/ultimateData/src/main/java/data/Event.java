@@ -2,6 +2,7 @@ package data;
 
 import enums.EventTypeEnum;
 import enums.QuarterEnum;
+import exceptions.BadMapException;
 
 public class Event {
 	public class gameTeam{
@@ -35,6 +36,7 @@ public class Event {
 	
 	private final gameTeam awayTeam;
 	private final gameTeam homeTeam;
+	private final String offenseTeam;
 	private final EventTypeEnum eventType;
 	private final boolean isHomeOffense;
 	private final byte pointNumber;
@@ -65,10 +67,11 @@ public class Event {
 			byte awayTeamScore, QuarterEnum quarter, Integer quarterTime, String[] players,
 			String puller, Coordinate pullCoordinates, Integer pullMs, String thrower,
 			Coordinate throwerCoordinates, Coordinate receiverCoordinates, String receiver,
-			Coordinate throwDistance, String defender, Coordinate turnoverCoordinates, short index)
+			Coordinate throwDistance, String defender, Coordinate turnoverCoordinates, short index) throws BadMapException
 	{
 		this.awayTeam = new gameTeam(awayTeam, true, (recordingTeam.equals(awayTeam)), (offenseTeam.equals(awayTeam)));
 		this.homeTeam = new gameTeam(homeTeam, false, (recordingTeam.equals(homeTeam)), (offenseTeam.equals(homeTeam)));
+		this.offenseTeam = TeamTable.getTeamIdFromAbbrev(offenseTeam);
 		this.isHomeOffense = isHomeOffense; //=2 if home is offense
 		this.eventType = eventType;
 		this.pointNumber = pointNumber;
@@ -183,6 +186,12 @@ public class Event {
 
 	public void setIndex(short index) {
 		this.index = index;
+	}
+
+
+	public Object getOffenseTeam() {
+		// TODO Auto-generated method stub
+		return this.offenseTeam;
 	}
 	
 }

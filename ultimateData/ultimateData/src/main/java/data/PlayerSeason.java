@@ -250,6 +250,7 @@ public class PlayerSeason {
 	public void calculatePostSeasonStatistics() {
 		double totalDistanceThrown = 0.0;
 		double totalDistanceReceived = 0.0;
+		int totalThrows = 0;
 		int totalReceives = 0;
 		for (Game game : Records.getGameRecords()) {
 			if (game.getYear() != year)
@@ -258,8 +259,9 @@ public class PlayerSeason {
 				if (event.getThrowDistance() == null || event.getThrowDistance().getMagnitude() == null) {
 					continue;
 				}
-				if (event.getThrower().equals(playerId)) {
+				if (event.getThrower().equals(playerId) && event.getOffenseTeam().equals(teamID)) {
 						totalDistanceThrown += event.getThrowDistance().getMagnitude();
+						totalThrows++;
 				} else {
 					if (event.getReceiver().equals(playerId)) {
 						totalReceives++;
@@ -269,7 +271,7 @@ public class PlayerSeason {
 			}
 		}
 		if (this.throwAttempts != 0)
-			this.averageDistanceThrown = totalDistanceThrown / ((double) this.throwAttempts);
+			this.averageDistanceThrown = totalDistanceThrown / ((double) totalThrows);
 		if (totalReceives != 0)
 			this.averageDistanceReceived = totalDistanceReceived / ((double) totalReceives);
 	}

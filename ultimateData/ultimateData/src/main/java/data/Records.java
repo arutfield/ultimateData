@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import data.raw.RawData;
 import exceptions.BadEnumException;
+import exceptions.BadMapException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters;
 import parser.StringConverters.GameEventEnum;
@@ -27,7 +28,7 @@ public class Records {
 	private static final LinkedList<RawData> rawDataRecords = new LinkedList<RawData>();
 
 	public static void loadAudlGameEvents()
-			throws WrongSizeRowException, BadEnumException, FileNotFoundException, IOException {
+			throws WrongSizeRowException, BadEnumException, FileNotFoundException, IOException, NumberFormatException, BadMapException {
 		boolean seenHeaderLine = false;
 		try (BufferedReader br = new BufferedReader(new FileReader("../AUDLGameEvents.csv"))) {
 			String line;

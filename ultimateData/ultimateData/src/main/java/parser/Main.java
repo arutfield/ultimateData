@@ -21,9 +21,11 @@ import data.PlayerSeason;
 import data.Records;
 import data.Team;
 import data.TeamStats;
+import data.TeamTable;
 import data.raw.RawData;
 import enums.RawDataEnums;
 import exceptions.BadEnumException;
+import exceptions.BadMapException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters.GameEventEnum;
 import parser.StringConverters.PlayerGameEnum;
@@ -48,8 +50,8 @@ public class Main {
 	private static final Ratios mainRatios = new Ratios();
 	
 	public static void main(String[] args)
-			throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException {
-
+			throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException, BadMapException {
+		TeamTable.createMap();
 		Records.loadGames();
 		Records.loadAudlGameEvents();
 		Records.loadPlayerGameStatsAdvanced();

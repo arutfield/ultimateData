@@ -21,6 +21,7 @@ import data.GameDetails;
 import data.PlayerGame;
 import data.PlayerSeason;
 import data.TeamStats;
+import data.TeamTable;
 import data.raw.RawData;
 import data.raw.Weather;
 import enums.EventTypeEnum;
@@ -28,6 +29,7 @@ import enums.QuarterEnum;
 import enums.RawDataEnums;
 import enums.RawDataEnums.DefenseScheme;
 import exceptions.BadEnumException;
+import exceptions.BadMapException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters;
 
@@ -78,7 +80,8 @@ public class DataInputTest {
 	}
 
 	@Test
-	public void testConvertToEvent() throws WrongSizeRowException, BadEnumException {
+	public void testConvertToEvent() throws WrongSizeRowException, BadEnumException, NumberFormatException, BadMapException {
+		TeamTable.createMap();
 		String sampleString = "2022-07-22-LA-SLC,LA,SLC,LA,LA,SLC,2,7,Pull In bounds,7,9,0,3,3,1,422,gsanti,msteiner,nkirchhof,jbaumer,efinley,apadula,ccogswell,msteiner,24.62,39.1,12414,None,None,None,None,None,None,None,None,None,None,nan,nan,45";
 		String[] values = sampleString.split(",");
 		Event event = StringConverters.convertToEvent(values);
@@ -111,7 +114,8 @@ public class DataInputTest {
 	}
 
 	@Test
-	public void testConvertToEvent2() throws WrongSizeRowException, BadEnumException {
+	public void testConvertToEvent2() throws WrongSizeRowException, BadEnumException, NumberFormatException, BadMapException {
+		TeamTable.createMap();
 		String sampleString = "2022-07-16-SLC-OAK,SLC,OAK,SLC,OAK,SLC,1,22,Throwaway thrown by recoding team,17,39,0,9,6,2,499,abenton,bjordan,jmerrill,jkerr,lyorgason,jmiller,sconnole,None,None,None,None,bjordan,2.79,23.18,None,None,None,6.82,15.07,16.54138144,None,9.61,38.25,119";
 		String[] values = sampleString.split(",");
 		Event event = StringConverters.convertToEvent(values);

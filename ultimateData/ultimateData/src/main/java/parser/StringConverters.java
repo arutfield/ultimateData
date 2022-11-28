@@ -42,6 +42,7 @@ import enums.RawDataEnums.ThrowDirectionEnum;
 import enums.RawDataEnums.TurnoverType;
 import enums.RawDataEnums.YesNoNA;
 import exceptions.BadEnumException;
+import exceptions.BadMapException;
 import exceptions.WrongSizeRowException;
 import jdk.internal.jline.internal.Log;
 
@@ -92,7 +93,7 @@ public class StringConverters {
 	static final int playerGameLength = 43;
 	static final short gameDetailLength = 7;
 
-	public static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException {
+	public static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException, NumberFormatException, BadMapException {
 		if (values.length != gameEventLength)
 			throw new WrongSizeRowException(gameEventLength, values.length);
 		String[] players = new String[] { values[GameEventEnum.player1.value], values[GameEventEnum.player2.value],
