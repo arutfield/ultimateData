@@ -511,7 +511,7 @@ public class StringConverters {
 			return Double.parseDouble(value);
 		} catch (NumberFormatException ex) {
 			logger.warn("Unable to parse " + value + " into double");
-			return null;
+			return Double.NaN;
 		}
 
 	}

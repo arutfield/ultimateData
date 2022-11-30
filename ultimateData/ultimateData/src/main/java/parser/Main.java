@@ -42,15 +42,17 @@ public class Main {
 		int awayDLineScoresCount = 0;
 		double offenseScoreRatio;
 		double homeScoreRatio;
-		Ratios(){
-			
+
+		Ratios() {
+
 		}
 	}
+
 	private static final Logger logger = LogManager.getLogger(Main.class);
 	private static final Ratios mainRatios = new Ratios();
-	
-	public static void main(String[] args)
-			throws IOException, WrongSizeRowException, BadEnumException, NumberFormatException, ParseException, BadMapException {
+
+	public static void main(String[] args) throws IOException, WrongSizeRowException, BadEnumException,
+			NumberFormatException, ParseException, BadMapException {
 		TeamTable.createMap();
 		Records.loadGames();
 		Records.loadAudlGameEvents();
@@ -58,7 +60,7 @@ public class Main {
 		Records.loadPlayerSeasonStats();
 		Records.loadTeamStats();
 		Records.loadRawData();
-		//once loaded, do post calculations
+		// once loaded, do post calculations
 		for (Player player : Records.getPlayerRecords()) {
 			for (PlayerSeason season : player.getPlayerSeasonList()) {
 				season.calculatePostSeasonStatistics();
@@ -104,26 +106,41 @@ public class Main {
 		}
 
 		calculateScoringRatios();
-						
-		
+
 		LinkedList<String[]> csvData = new LinkedList<>();
-		csvData.add(new String[] {"Total scores:", Integer.toString(mainRatios.countTotalScores), "O scores: ", Integer.toString(mainRatios.countOLineScores), "ratio: ", Double.toString(mainRatios.offenseScoreRatio)});
-		csvData.add(new String[] {"Total scores:", Integer.toString(mainRatios.countTotalScores), "Home scores: ", Integer.toString(mainRatios.countHomeLineScores), "ratio: ", Double.toString(mainRatios.homeScoreRatio)});
-		csvData.add(new String[] {"O Home scores ratio", Double.toString(((double) mainRatios.homeOLineScoresCount) / (double) mainRatios.countTotalScores)});
-		csvData.add(new String[] {"O Away scores ratio", Double.toString(((double) mainRatios.awayOLineScoresCount) / (double) mainRatios.countTotalScores)});
-		csvData.add(new String[] {"D Home scores ratio", Double.toString(((double) mainRatios.homeDLineScoresCount) / (double) mainRatios.countTotalScores)});
-		csvData.add(new String[] {"D Away scores ratio", Double.toString(((double) mainRatios.awayDLineScoresCount) / (double) mainRatios.countTotalScores)});
-		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio", "oPointsPlayed",
-				"dPointsPlayed", "Percent Offense", "Average throw distance", "Average receive distance" });
+		csvData.add(new String[] { "Total scores:", Integer.toString(mainRatios.countTotalScores), "O scores: ",
+				Integer.toString(mainRatios.countOLineScores), "ratio: ",
+				Double.toString(mainRatios.offenseScoreRatio) });
+		csvData.add(new String[] { "Total scores:", Integer.toString(mainRatios.countTotalScores), "Home scores: ",
+				Integer.toString(mainRatios.countHomeLineScores), "ratio: ",
+				Double.toString(mainRatios.homeScoreRatio) });
+		csvData.add(new String[] { "O Home scores ratio",
+				Double.toString(((double) mainRatios.homeOLineScoresCount) / (double) mainRatios.countTotalScores) });
+		csvData.add(new String[] { "O Away scores ratio",
+				Double.toString(((double) mainRatios.awayOLineScoresCount) / (double) mainRatios.countTotalScores) });
+		csvData.add(new String[] { "D Home scores ratio",
+				Double.toString(((double) mainRatios.homeDLineScoresCount) / (double) mainRatios.countTotalScores) });
+		csvData.add(new String[] { "D Away scores ratio",
+				Double.toString(((double) mainRatios.awayDLineScoresCount) / (double) mainRatios.countTotalScores) });
+		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio",
+				"oPointsPlayed", "dPointsPlayed", "Percent Offense", "Average throw distance",
+				"Average receive distance", "Average Throw Angle", "Average Receive Angle", "Throw Throwaway Rate",
+				"Blocks per Point" });
 		for (PlayerSeason season : playerSeasonsSortedOverall) {
-			csvData.add(new String[] { season.getPlayerId(), season.getTeamID(), Short.toString(season.getYear()),
-					season.getOverallRatio().toString(),
+			String[] stringToAdd = new String[] { season.getPlayerId(), season.getTeamID(),
+					Short.toString(season.getYear()), season.getOverallRatio().toString(),
 					season.getoPointsRatio().toString(),
 					season.getdPointsRatio() == null ? "" : season.getdPointsRatio().toString(),
 					Short.toString(season.getoPointsPlayed()), Short.toString(season.getdPointsPlayed()),
 					Double.toString(season.getPercentOffense()),
-					season.getAverageDistanceThrown() > 0 ? Double.toString(season.getAverageDistanceThrown()) : "",
-					season.getAverageDistanceReceived() > 0 ? Double.toString(season.getAverageDistanceReceived()) : ""});
+					season.getAverageDistanceThrown() >= 0 ? Double.toString(season.getAverageDistanceThrown()) : "",
+					season.getAverageDistanceReceived() >= 0 ? Double.toString(season.getAverageDistanceReceived())
+							: "",
+					season.getAverageThrowAngle() >= 0 ? Double.toString(season.getAverageThrowAngle()) : "",
+					season.getAverageReceiveAngle() >= 0 ? Double.toString(season.getAverageReceiveAngle()) : "",
+					season.getThrowawayRatio() >= 0 ? Double.toString(season.getThrowawayRatio()) : "",
+					season.getBlocksPerPoint() >= 0 ? Double.toString(season.getBlocksPerPoint()) : "" };
+			csvData.add(stringToAdd);
 		}
 
 		exportToCsv(csvData);
@@ -146,7 +163,7 @@ public class Main {
 		System.out.println("DONE");
 
 	}
-	
+
 	private static void calculateScoringRatios() throws IOException {
 		for (RawData rawData : Records.getRawDataRecords()) {
 			if (rawData.getScoringPass() == RawDataEnums.YesNoNA.Yes) {
@@ -173,6 +190,7 @@ public class Main {
 		}
 		mainRatios.offenseScoreRatio = (double) (mainRatios.countOLineScores) / (double) (mainRatios.countTotalScores);
 		mainRatios.homeScoreRatio = (double) (mainRatios.countHomeLineScores) / (double) (mainRatios.countTotalScores);
-		logger.info("Total scores " + mainRatios.countTotalScores + ", O scores: " + mainRatios.countOLineScores + ", ratio: " + mainRatios.offenseScoreRatio);
+		logger.info("Total scores " + mainRatios.countTotalScores + ", O scores: " + mainRatios.countOLineScores
+				+ ", ratio: " + mainRatios.offenseScoreRatio);
 	}
 }

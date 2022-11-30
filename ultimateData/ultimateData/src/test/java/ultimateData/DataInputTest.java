@@ -273,7 +273,7 @@ public class DataInputTest {
 		checkCoordinates(rawData.getLocation1(), 0.800728463, 0.682992254);
 		assertEquals("bjagt", rawData.getPlayer2Id());
 		checkCoordinates(rawData.getLocation2(), 0.151269003, 0.810201943);
-		assertNull(rawData.getPullTime());
+		assertEquals(Double.NaN, rawData.getPullTime(), 0.001);
 		assertEquals(RawDataEnums.PullInfo.None, rawData.getPullInfo());
 		assertEquals(RawDataEnums.DefenderDistance.None, rawData.getClosestDefenderDistance());
 		assertEquals(RawDataEnums.Force.Unmarked, rawData.getForce());
@@ -337,7 +337,7 @@ public class DataInputTest {
 		checkCoordinates(rawData.getThrowVector(), 6.290518404, 73.62748967);
 		assertEquals(rawData.getThrowDirectionCategory(), RawDataEnums.ThrowDirectionEnum.Downfield);
 		checkCoordinates(rawData.getPullCoordinates(), 18.24239737, -0.987006296);
-		assertNull(rawData.getPullYardsFromMiddle());
+		assertEquals(Double.NaN, rawData.getPullYardsFromMiddle(), 0.001);
 		assertEquals(80.98701, rawData.getPullYDistance(), 0.001);
 		assertEquals(RawDataEnums.YesNoNA.No, rawData.getCompletedPass());
 		assertEquals(RawDataEnums.YesNoNA.No, rawData.getScoringPass());
@@ -372,7 +372,7 @@ public class DataInputTest {
 		checkCoordinates(rawData.getLocation1(), 0.143719, 0.4446618);
 		assertEquals("nhirst", rawData.getPlayer2Id());
 		checkCoordinates(rawData.getLocation2(), 0.785775, 0.474521);
-		assertNull(rawData.getPullTime());
+		assertEquals(Double.NaN, rawData.getPullTime(), 0.001);
 		assertEquals(RawDataEnums.PullInfo.Normal, rawData.getPullInfo());
 		assertEquals(RawDataEnums.DefenderDistance.None, rawData.getClosestDefenderDistance());
 		assertEquals(RawDataEnums.Force.None, rawData.getForce());
@@ -385,7 +385,7 @@ public class DataInputTest {
 		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 		Date actualDate = formatter.parse("07/24/2021");
 		assertEquals(actualDate, rawData.getGameDate());
-		checkWeather(rawData.getWeather(), null, null, null, null, RawDataEnums.YesNoNA.NA);
+		checkWeather(rawData.getWeather(), Double.NaN, Double.NaN, Double.NaN, Double.NaN, RawDataEnums.YesNoNA.NA);
 		assertEquals("outlaws", rawData.getDefendingTeamId());
 		assertEquals("NA", rawData.getThrowerId());
 		assertEquals("NA", rawData.getTargetedReceiverId());

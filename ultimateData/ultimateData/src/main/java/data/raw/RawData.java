@@ -438,4 +438,8 @@ public class RawData {
 		return component4.dSchemePossession;
 	}
 
+	public int getYear() {
+		return gameInfo.year;
+	}
+
 }

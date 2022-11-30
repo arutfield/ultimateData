@@ -7,6 +7,7 @@ import enums.RawDataEnums.OffenseDirection;
 
 public class GameInfo{
 	final String gameTitle;
+	final int year;
 	final String homeTeamId;
 	final String awayTeamId;
 	final RawDataEnums.FieldType fieldType;
@@ -19,6 +20,9 @@ public class GameInfo{
 	public GameInfo(String gameTitle, String homeTeamId, String awayTeamId, FieldType fieldType, Short homeScore,
 			Short awayScore, OffenseDirection offenseDirection, QuarterEnum quarter, Short gameClockSeconds) {
 		this.gameTitle = gameTitle;
+		String[] splitBySlash = gameTitle.split("/");
+		String[] splitByColon = splitBySlash[2].split(":");
+		this.year = Integer.valueOf("20" + splitByColon[0]);
 		this.homeTeamId = homeTeamId;
 		this.awayTeamId = awayTeamId;
 		this.fieldType = fieldType;

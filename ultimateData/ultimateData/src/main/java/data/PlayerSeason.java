@@ -1,5 +1,7 @@
 package data;
 
+import data.raw.RawData;
+
 public class PlayerSeason {
 	private static final double percentOLineScored = 0.739685658153241;
 	private final String playerId;
@@ -41,6 +43,10 @@ public class PlayerSeason {
 	private final Double percentOffense;
 	private double averageDistanceThrown = 0.0;
 	private double averageDistanceReceived = 0.0;
+	private double averageThrowAngle = 0.0;
+	private double averageReceiveAngle = 0.0;
+	private final double throwawayRatio;
+	private final double blocksPerPoint;
 	
 	
 	public PlayerSeason(String playerId, short year, String teamID, short games, short assists, short goals,
@@ -85,8 +91,18 @@ public class PlayerSeason {
 		this.dOpportunityStops = dOpportunityStops;
 		this.oPointsRatio = (oPointsPlayed == 0) ? null : (double) oPointsScored/(double) oPointsPlayed;
 		this.dPointsRatio = (dPointsPlayed == 0) ? null : (double) dPointsScored/(double) dPointsPlayed;
+		int totalPointsPlayed = oPointsPlayed + dPointsPlayed;
 		this.overallRatio = (double) (oPointsScored + ((double) dPointsScored) * percentOLineScored / (1.0 - percentOLineScored)) / (double) (oPointsPlayed + dPointsPlayed);
-		this.percentOffense = (double) (oPointsPlayed) / (double) (oPointsPlayed + dPointsPlayed);
+		this.percentOffense = (double) (oPointsPlayed) / (double) (totalPointsPlayed);
+		
+		if (throwAttempts == 0)
+			this.throwawayRatio = Double.NaN;
+		else
+			this.throwawayRatio = (double) (throwaways) / (double) (throwAttempts);
+		if (totalPointsPlayed == 0)
+			this.blocksPerPoint = Double.NaN;
+		else
+			this.blocksPerPoint = (double) (blocks) / (double) (totalPointsPlayed);
 	}
 
 	public String getPlayerId() {
@@ -246,6 +262,22 @@ public class PlayerSeason {
 	public Double getAverageDistanceReceived() {
 		return averageDistanceReceived;
 	}
+	
+	public Double getAverageThrowAngle() {
+		return averageThrowAngle;
+	}
+	
+	public Double getAverageReceiveAngle() {
+		return averageReceiveAngle;
+	}
+
+	public double getThrowawayRatio() {
+		return throwawayRatio;
+	}
+
+	public double getBlocksPerPoint() {
+		return blocksPerPoint;
+	}
 
 	public void calculatePostSeasonStatistics() {
 		double totalDistanceThrown = 0.0;
@@ -270,10 +302,38 @@ public class PlayerSeason {
 				}
 			}
 		}
+		
+		double totalThrowAngle = 0.0;
+		double totalReceivesAngle = 0.0;
+		int totalThrowsForAngle = 0;
+		int totalReceivesForAngle = 0;
+		for (RawData rawData : Records.getRawDataRecords()) {
+			if (rawData.getYear() != year || rawData.getThrowAngle() == Double.NaN)
+				continue;
+			if (rawData.getThrowerId().equals(playerId) && rawData.getTeamId().equals(teamID)) {
+				totalThrowAngle += Math.abs(rawData.getThrowAngle());
+				totalThrowsForAngle++;
+			} else {
+				if (rawData.getTargetedReceiverId().equals(playerId) && rawData.getTeamId().equals(teamID)) {
+					totalReceivesForAngle++;
+					totalReceivesAngle += Math.abs(rawData.getThrowAngle());
+				}
+			}
+		}
 		if (this.throwAttempts != 0)
 			this.averageDistanceThrown = totalDistanceThrown / ((double) totalThrows);
 		if (totalReceives != 0)
 			this.averageDistanceReceived = totalDistanceReceived / ((double) totalReceives);
+		if (totalThrowsForAngle != 0)
+			this.averageThrowAngle = totalThrowAngle / ((double) totalThrowsForAngle);
+		else
+			this.averageThrowAngle = Double.NaN;
+		
+		if (totalReceivesForAngle != 0)
+			this.averageReceiveAngle = totalReceivesAngle / ((double) totalReceivesForAngle);
+		else
+			this.averageReceiveAngle = Double.NaN;
+		
 	}
 
 }
