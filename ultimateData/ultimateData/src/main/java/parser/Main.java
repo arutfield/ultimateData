@@ -125,7 +125,10 @@ public class Main {
 		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio",
 				"oPointsPlayed", "dPointsPlayed", "Percent Offense", "Average throw distance",
 				"Average receive distance", "Average Throw Angle", "Average Receive Angle", "Throw Throwaway Rate",
-				"Blocks per Point" });
+				"Blocks per Point", "Catches per Point", "Drops per Point", "Successful hucks per Point",
+				"Score Opportunities per Point", "Scores per Point", "Scores/Opportunity",
+				"Defense Opportunities per Point", "Stops per Point", "Stops/Opportunity",
+				"Personal stops per opportunity", "Turns involved in per defense play" });
 		for (PlayerSeason season : playerSeasonsSortedOverall) {
 			String[] stringToAdd = new String[] { season.getPlayerId(), season.getTeamID(),
 					Short.toString(season.getYear()), season.getOverallRatio().toString(),
@@ -139,17 +142,46 @@ public class Main {
 					season.getAverageThrowAngle() >= 0 ? Double.toString(season.getAverageThrowAngle()) : "",
 					season.getAverageReceiveAngle() >= 0 ? Double.toString(season.getAverageReceiveAngle()) : "",
 					season.getThrowawayRatio() >= 0 ? Double.toString(season.getThrowawayRatio()) : "",
-					season.getBlocksPerPoint() >= 0 ? Double.toString(season.getBlocksPerPoint()) : "" };
+					season.getBlocksPerPoint() >= 0 ? Double.toString(season.getBlocksPerPoint()) : "",
+					season.getCatchesPerPoint() >= 0 ? Double.toString(season.getCatchesPerPoint()) : "",
+					season.getDropsPerPoint() >= 0 ? Double.toString(season.getDropsPerPoint()) : "",
+					season.getSuccessfulHucksPerPoint() >= 0 ? Double.toString(season.getSuccessfulHucksPerPoint())
+							: "",
+					season.getoOpportunitiesPerPoint() >= 0 ? Double.toString(season.getoOpportunitiesPerPoint()) : "",
+					season.getoOpportunityScoresPerPoint() >= 0
+							? Double.toString(season.getoOpportunityScoresPerPoint())
+							: "",
+					season.getoOpportunitySuccessPerPoint() >= 0
+							? Double.toString(season.getoOpportunitySuccessPerPoint())
+							: "",
+					season.getdOpportunitiesPerPoint() >= 0 ? Double.toString(season.getdOpportunitiesPerPoint()) : "",
+					season.getdOpportunityStopsPerPoint() >= 0 ? Double.toString(season.getdOpportunityStopsPerPoint())
+							: "",
+					season.getdOpportunitySuccessPerPoint() >= 0
+							? Double.toString(season.getdOpportunitySuccessPerPoint())
+							: "",
+					season.getPersonalStopsPerOpportunity() >= 0
+							? Double.toString(season.getPersonalStopsPerOpportunity())
+							: "",
+							season.getPercentInvolvedInDefensePerThrow() >= 0
+							? Double.toString(season.getPercentInvolvedInDefensePerThrow())
+							: "",
+
+			};
 			csvData.add(stringToAdd);
 		}
 
-		exportToCsv(csvData);
+		exportToCsv(csvData, "player_results_");
+		
+		
+		
+		
+		
 	}
 
-	private static void exportToCsv(LinkedList<String[]> csvContent) {
+	private static void exportToCsv(LinkedList<String[]> csvContent, String filename) {
 		// default all fields are enclosed in double quotes
 		// default separator is a comma
-		String filename = "results_";
 		int attemptsMade = 0;
 		while (true) {
 			try (CSVWriter writer = new CSVWriter(new FileWriter(filename + attemptsMade + ".csv"))) {
@@ -163,6 +195,7 @@ public class Main {
 		System.out.println("DONE");
 
 	}
+	
 
 	private static void calculateScoringRatios() throws IOException {
 		for (RawData rawData : Records.getRawDataRecords()) {
