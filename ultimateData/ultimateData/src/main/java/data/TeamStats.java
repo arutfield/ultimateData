@@ -10,6 +10,10 @@ public class TeamStats {
 	private final short divStanding;
 	private final double teamSeasonRating;
 	private int seasonRanking;
+	private int pointsScored;
+	private int pointsAgainst;
+	private double averagePPG;
+	private double averagePPGAgainst;
 	
 	public TeamStats(String teamId, short year, String divisionID, short wins, short losses, short ties, short divStanding) {
 		this.teamId = teamId;
@@ -62,5 +66,36 @@ public class TeamStats {
 		return teamId;
 	}
 
+	public double getAveragePPG() {
+		return averagePPG;
+	}
+
+	public void setAveragePPG(double averagePPG) {
+		this.averagePPG = averagePPG;
+	}
+
+	public double getAveragePPGAgainst() {
+		return averagePPGAgainst;
+	}
+
+	public void setAveragePPGAgainst(double averagePPGAgainst) {
+		this.averagePPGAgainst = averagePPGAgainst;
+	}
+
+	public void addToPointsScored(int added) {
+		this.pointsScored += added;
+	}
+
+	public void addToPointsScoredAgainst(int added) {
+		this.pointsAgainst += added;
+	}
+
+	public int getPointsScored() {
+		return pointsScored;
+	}
+
+	public int getPointsAgainst() {
+		return pointsAgainst;
+	}
 
 }

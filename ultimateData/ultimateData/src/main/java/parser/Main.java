@@ -174,13 +174,16 @@ public class Main {
 		exportToCsv(csvData, "player_results_");
 
 		LinkedList<TeamStats> rankedTeamStats = orderSeasonsByRank();
+		calculatePPGs();
+
 		LinkedList<String[]> teamCSVData = new LinkedList<>();
-		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins" });
+		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins", "PPG", "PPG Against" });
 
 		for (TeamStats teamStat : rankedTeamStats) {
 			teamCSVData.add(new String[] { teamStat.getTeamId(), String.valueOf(teamStat.getYear()),
 					String.valueOf(teamStat.getTeamSeasonRating()), String.valueOf(teamStat.getSeasonRanking()),
-							String.valueOf(teamStat.getWins()) });
+					String.valueOf(teamStat.getWins()), String.valueOf(teamStat.getAveragePPG()),
+					String.valueOf(teamStat.getAveragePPGAgainst()) });
 		}
 		exportToCsv(teamCSVData, "team_results_");
 	}
@@ -237,7 +240,7 @@ public class Main {
 		for (Team team : Records.getTeamRecords()) {
 			boolean statAdded = false;
 			for (TeamStats listTeamStat : team.getTeamStats()) {
-				//iterate already ordered list
+				// iterate already ordered list
 				for (int i = 0; i < statList.size(); i++) {
 					TeamStats currentStat = statList.get(i);
 					if (listTeamStat.getTeamSeasonRating() > currentStat.getTeamSeasonRating()
@@ -258,6 +261,43 @@ public class Main {
 			i++;
 		}
 		return statList;
+	}
+
+	private static void calculatePPGs() {
+		for (Game game : Records.getGameRecords()) {
+			int year = game.getYear();
+			String homeTeam = game.getHomeTeam();
+			String awayTeam = game.getAwayTeam();
+			for (Team team : Records.getTeamRecords()) {
+
+				if (team.getTeamId().equals(homeTeam)) {
+					for (TeamStats stats : team.getTeamStats())
+						if (stats.getYear() == year) {
+							stats.addToPointsScored(game.getHomeScore());
+							stats.addToPointsScoredAgainst(game.getAwayScore());
+							break;
+						}
+				} else if (team.getTeamId().equals(awayTeam)) {
+					for (TeamStats stats : team.getTeamStats()) {
+						if (stats.getYear() == year) {
+							stats.addToPointsScored(game.getAwayScore());
+							stats.addToPointsScoredAgainst(game.getHomeScore());
+							break;
+						}
+					}
+				}
+			}
+
+			for (Team team : Records.getTeamRecords()) {
+				for (TeamStats stats : team.getTeamStats()) {
+					stats.setAveragePPG((double) stats.getPointsScored()
+							/ (double) (stats.getWins() + stats.getLosses() + stats.getTies()));
+					stats.setAveragePPGAgainst((double) stats.getPointsAgainst()
+							/ (double) (stats.getWins() + stats.getLosses() + stats.getTies()));
+				}
+			}
+
+		}
 	}
 
 }
