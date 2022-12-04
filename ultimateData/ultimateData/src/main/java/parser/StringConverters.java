@@ -334,7 +334,7 @@ public class StringConverters {
 	}
 
 	public static TeamStats convertToTeamStats(String[] values) {
-		return new TeamStats(Short.valueOf(values[TeamStatsEnum.year.value]), values[TeamStatsEnum.divisionId.value],
+		return new TeamStats(values[TeamStatsEnum.teamId.value], Short.valueOf(values[TeamStatsEnum.year.value]), values[TeamStatsEnum.divisionId.value],
 				Short.valueOf(values[TeamStatsEnum.wins.value]), Short.valueOf(values[TeamStatsEnum.losses.value]),
 				Short.valueOf(values[TeamStatsEnum.ties.value]),
 				Short.valueOf(values[TeamStatsEnum.divStanding.value]));

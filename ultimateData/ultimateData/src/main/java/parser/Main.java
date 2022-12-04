@@ -163,7 +163,7 @@ public class Main {
 					season.getPersonalStopsPerOpportunity() >= 0
 							? Double.toString(season.getPersonalStopsPerOpportunity())
 							: "",
-							season.getPercentInvolvedInDefensePerThrow() >= 0
+					season.getPercentInvolvedInDefensePerThrow() >= 0
 							? Double.toString(season.getPercentInvolvedInDefensePerThrow())
 							: "",
 
@@ -172,11 +172,17 @@ public class Main {
 		}
 
 		exportToCsv(csvData, "player_results_");
-		
-		
-		
-		
-		
+
+		LinkedList<TeamStats> rankedTeamStats = orderSeasonsByRank();
+		LinkedList<String[]> teamCSVData = new LinkedList<>();
+		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins" });
+
+		for (TeamStats teamStat : rankedTeamStats) {
+			teamCSVData.add(new String[] { teamStat.getTeamId(), String.valueOf(teamStat.getYear()),
+					String.valueOf(teamStat.getTeamSeasonRating()), String.valueOf(teamStat.getSeasonRanking()),
+							String.valueOf(teamStat.getWins()) });
+		}
+		exportToCsv(teamCSVData, "team_results_");
 	}
 
 	private static void exportToCsv(LinkedList<String[]> csvContent, String filename) {
@@ -195,7 +201,6 @@ public class Main {
 		System.out.println("DONE");
 
 	}
-	
 
 	private static void calculateScoringRatios() throws IOException {
 		for (RawData rawData : Records.getRawDataRecords()) {
@@ -226,4 +231,33 @@ public class Main {
 		logger.info("Total scores " + mainRatios.countTotalScores + ", O scores: " + mainRatios.countOLineScores
 				+ ", ratio: " + mainRatios.offenseScoreRatio);
 	}
+
+	private static LinkedList<TeamStats> orderSeasonsByRank() {
+		LinkedList<TeamStats> statList = new LinkedList<>();
+		for (Team team : Records.getTeamRecords()) {
+			boolean statAdded = false;
+			for (TeamStats listTeamStat : team.getTeamStats()) {
+				//iterate already ordered list
+				for (int i = 0; i < statList.size(); i++) {
+					TeamStats currentStat = statList.get(i);
+					if (listTeamStat.getTeamSeasonRating() > currentStat.getTeamSeasonRating()
+							|| (listTeamStat.getTeamSeasonRating() == currentStat.getTeamSeasonRating()
+									&& listTeamStat.getWins() > currentStat.getWins())) {
+						statList.add(i, listTeamStat);
+						statAdded = true;
+						break;
+					}
+				}
+				if (!statAdded && listTeamStat != null)
+					statList.add(listTeamStat);
+			}
+		}
+		int i = 0;
+		for (TeamStats statInList : statList) {
+			statInList.setSeasonRanking(i);
+			i++;
+		}
+		return statList;
+	}
+
 }
