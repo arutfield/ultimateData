@@ -21,5 +21,18 @@ public class Team {
 	public void addTeamStats(TeamStats teamStat) {
 		teamStats.add(teamStat);
 	}
+	
+	public void calculateAveragePassAttemptsPerPointEachSeason() {
+		for (TeamStats teamStat : teamStats) {
+			teamStat.calculateAveragePassAttemptsPerPoint();
+		}
+	}
+
+	public void calculateAveragePassRatioAgainstManEachSeason() {
+		for (TeamStats teamStat : teamStats) {
+			teamStat.calculateAveragePassRatioAgainstManPerPoint();
+		}
+		
+	}
 
 }

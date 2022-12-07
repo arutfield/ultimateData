@@ -26,6 +26,7 @@ import data.raw.RawData;
 import enums.RawDataEnums;
 import exceptions.BadEnumException;
 import exceptions.BadMapException;
+import exceptions.ValueException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters.GameEventEnum;
 import parser.StringConverters.PlayerGameEnum;
@@ -52,7 +53,7 @@ public class Main {
 	private static final Ratios mainRatios = new Ratios();
 
 	public static void main(String[] args) throws IOException, WrongSizeRowException, BadEnumException,
-			NumberFormatException, ParseException, BadMapException {
+			NumberFormatException, ParseException, BadMapException, ValueException {
 		TeamTable.createMap();
 		Records.loadGames();
 		Records.loadAudlGameEvents();
@@ -175,15 +176,27 @@ public class Main {
 
 		LinkedList<TeamStats> rankedTeamStats = orderSeasonsByRank();
 		calculatePPGs();
+		for (Game game : Records.getGameRecords()) {
+			game.countPassAttempts();
+			game.countScoresAgainstMan();
+		}
+		
+		for (Team team : Records.getTeamRecords()) {
+			team.calculateAveragePassAttemptsPerPointEachSeason();
+			team.calculateAveragePassRatioAgainstManEachSeason();
+		}
+		
 
 		LinkedList<String[]> teamCSVData = new LinkedList<>();
-		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins", "PPG", "PPG Against" });
+		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins", "PPG", "PPG Against", "Pass Attempts", "Man Pass Ratio" });
 
 		for (TeamStats teamStat : rankedTeamStats) {
 			teamCSVData.add(new String[] { teamStat.getTeamId(), String.valueOf(teamStat.getYear()),
 					String.valueOf(teamStat.getTeamSeasonRating()), String.valueOf(teamStat.getSeasonRanking()),
 					String.valueOf(teamStat.getWins()), String.valueOf(teamStat.getAveragePPG()),
-					String.valueOf(teamStat.getAveragePPGAgainst()) });
+					String.valueOf(teamStat.getAveragePPGAgainst()),
+					String.valueOf(teamStat.getAveragePassAttempts()),
+					String.valueOf(teamStat.getManPassRatio())});
 		}
 		exportToCsv(teamCSVData, "team_results_");
 	}

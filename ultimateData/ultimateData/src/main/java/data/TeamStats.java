@@ -9,11 +9,14 @@ public class TeamStats {
 	private final short ties;
 	private final short divStanding;
 	private final double teamSeasonRating;
+	private double percentScoresWereNotPerson;
 	private int seasonRanking;
 	private int pointsScored;
 	private int pointsAgainst;
 	private double averagePPG;
 	private double averagePPGAgainst;
+	private double averagePassAttempts;
+	private double manPassRatio;
 	
 	public TeamStats(String teamId, short year, String divisionID, short wins, short losses, short ties, short divStanding) {
 		this.teamId = teamId;
@@ -96,6 +99,54 @@ public class TeamStats {
 
 	public int getPointsAgainst() {
 		return pointsAgainst;
+	}
+
+	public double getAveragePassAttempts() {
+		return averagePassAttempts;
+	}
+
+	public void setAveragePassAttempts(double averagePassAttempts) {
+		this.averagePassAttempts = averagePassAttempts;
+	}
+	
+	public double getManPassRatio() {
+		return manPassRatio;
+	}
+	
+	public void calculateAveragePassAttemptsPerPoint() {
+		int totalPassAttempts = 0;
+		int totalPoints = 0;
+		for (Game game : Records.getGameRecords()) {
+			if (game.getYear() != this.year) {
+				continue;
+			}
+			if (game.getHomeTeam().equals(teamId)) {
+				totalPassAttempts += game.getHomePassAttempts();
+				totalPoints += (game.getHomeScore() + game.getAwayScore());
+			} else if (game.getAwayTeam().equals(teamId)) {
+				totalPassAttempts += game.getAwayPassAttempts();
+				totalPoints += (game.getHomeScore() + game.getAwayScore());				
+			}
+		}
+		averagePassAttempts = (double) totalPassAttempts / (double) totalPoints;
+	}
+
+	public void calculateAveragePassRatioAgainstManPerPoint() {
+		int totalPasses = 0;
+		int totalManPasses = 0;
+		for (Game game : Records.getGameRecords()) {
+			if (game.getYear() != this.year) {
+				continue;
+			}
+			if (game.getHomeTeam().equals(teamId)) {
+				totalPasses += game.getTotalPassesHome();
+				totalManPasses += game.getTotalPassesHomeMan();
+			} else if (game.getAwayTeam().equals(teamId)) {
+				totalPasses += game.getTotalPassesAway();
+				totalManPasses += game.getTotalPassesAwayMan();
+			}
+		}
+		manPassRatio = (double) totalManPasses / (double) totalPasses;
 	}
 
 }

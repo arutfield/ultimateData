@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import data.raw.RawData;
 import exceptions.BadEnumException;
 import exceptions.BadMapException;
+import exceptions.ValueException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters;
 import parser.StringConverters.GameEventEnum;
@@ -93,7 +94,7 @@ public class Records {
 	}
 
 	public static void loadGames()
-			throws FileNotFoundException, IOException, NumberFormatException, WrongSizeRowException, ParseException {
+			throws FileNotFoundException, IOException, NumberFormatException, WrongSizeRowException, ParseException, ValueException {
 		try (BufferedReader br = new BufferedReader(new FileReader("../games.csv"))) {
 			String line;
 			boolean seenHeaderLine = false;
