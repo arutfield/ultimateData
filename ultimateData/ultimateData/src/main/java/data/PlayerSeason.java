@@ -420,7 +420,7 @@ public class PlayerSeason {
 		int totalTurnsInvolvedOnField = 0;
 		int totalTimesDefenderOnField = 0;
 		for (RawData rawData : Records.getRawDataRecords()) {
-			if (rawData.getYear() != year || rawData.getThrowAngle() == Double.NaN)
+			if (rawData.getYear() != year || Double.isNaN(rawData.getThrowAngle()))
 				continue;
 			if (rawData.getEventType() == EventType.FoulTurnover || rawData.getEventType() == EventType.Turnover
 					|| rawData.getEventType() == EventType.completedPass) {

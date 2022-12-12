@@ -30,8 +30,8 @@ public class TeamStats {
 	private double averageThrowAngle = Double.NaN;
 	private double averageReceiveAngle = Double.NaN;
 
-	
-	public TeamStats(String teamId, short year, String divisionID, short wins, short losses, short ties, short divStanding) {
+	public TeamStats(String teamId, short year, String divisionID, short wins, short losses, short ties,
+			short divStanding) {
 		this.teamId = teamId;
 		this.year = year;
 		this.divisionID = divisionID;
@@ -121,15 +121,15 @@ public class TeamStats {
 	public void setAveragePassAttempts(double averagePassAttempts) {
 		this.averagePassAttempts = averagePassAttempts;
 	}
-	
+
 	public double getManPassRatio() {
 		return manPassRatio;
 	}
-	
+
 	public double getCompletionsPerGame() {
 		return completionsPerGame;
 	}
-	
+
 	public void calculateThrowStatistics() throws ValueException {
 		double totalDistanceThrown = 0.0;
 		int totalThrows = 0;
@@ -155,7 +155,8 @@ public class TeamStats {
 				continue;
 			if (rawData.getTeamId().equals(teamId)) {
 				totalThrowAngle += Math.abs(rawData.getThrowAngle());
-				System.out.println("total throw angle " + totalThrowAngle + ", " + Math.abs(rawData.getThrowAngle()) + ", " + rawData.getThrowAngle());
+				System.out.println("total throw angle " + totalThrowAngle + ", " + Math.abs(rawData.getThrowAngle())
+						+ ", " + rawData.getThrowAngle());
 				totalThrowsForAngle++;
 			}
 		}
@@ -163,37 +164,41 @@ public class TeamStats {
 			this.averageDistanceThrown = (double) totalDistanceThrown / ((double) totalThrows);
 		if (totalThrowsForAngle != 0) {
 			this.averageThrowAngle = totalThrowAngle / ((double) totalThrowsForAngle);
-			System.out.println("average throw angle " + this.averageThrowAngle + " from total " + totalThrowsForAngle + " with throw angle total " + totalThrowAngle);
-		}
-		else
+			System.out.println("average throw angle " + this.averageThrowAngle + " from total " + totalThrowsForAngle
+					+ " with throw angle total " + totalThrowAngle);
+		} else
 			this.averageThrowAngle = Double.NaN;
 
-
 	}
-	
+
 	public void calculateAverageTimeBetweenPasses() throws ValueException {
 		int totalPassGaps = 0;
 		int totalPassGapTimes = 0;
 		Double prevTime = 0.0;
 		boolean lastEventPass = false;
 		for (RawData rawData : Records.getRawDataRecords()) {
-			//if not this team or year, skip
+			// if not this team or year, skip
 			if (!rawData.getTeamId().equals(teamId) || rawData.getYear() != this.year) {
 				lastEventPass = false;
 				continue;
 			}
-			if (rawData.getEventType() == RawDataEnums.EventType.completedPass || rawData.getEventType() == RawDataEnums.EventType.PullReceived || rawData.getEventType() == RawDataEnums.EventType.Turnover) {
-				if (rawData.getEventType() == RawDataEnums.EventType.completedPass || rawData.getEventType() == RawDataEnums.EventType.PullReceived) {
-					//not a turnover
+			if (rawData.getEventType() == RawDataEnums.EventType.completedPass
+					|| rawData.getEventType() == RawDataEnums.EventType.PullReceived
+					|| rawData.getEventType() == RawDataEnums.EventType.Turnover) {
+				if (rawData.getEventType() == RawDataEnums.EventType.completedPass
+						|| rawData.getEventType() == RawDataEnums.EventType.PullReceived) {
+					// not a turnover
 					if (rawData.getEventType() == RawDataEnums.EventType.completedPass) {
 						if (lastEventPass) {
-							totalPassGapTimes += ((prevTime - rawData.getGameClockEstimate()) > 0 ? (prevTime - rawData.getGameClockEstimate()) : 0);
+							totalPassGapTimes += ((prevTime - rawData.getGameClockEstimate()) > 0
+									? (prevTime - rawData.getGameClockEstimate())
+									: 0);
 							totalPassGaps++;
 						}
 					}
 					lastEventPass = true;
 				}
-				//events to record time
+				// events to record time
 				prevTime = rawData.getGameClockEstimate();
 				if (prevTime == null) {
 					lastEventPass = false;
@@ -201,7 +206,7 @@ public class TeamStats {
 			} else {
 				lastEventPass = false;
 			}
-			
+
 		}
 		averageGapTime = (double) totalPassGapTimes / (double) totalPassGaps;
 	}
@@ -218,7 +223,7 @@ public class TeamStats {
 				totalPoints += (game.getHomeScore() + game.getAwayScore());
 			} else if (game.getAwayTeam().equals(teamId)) {
 				totalPassAttempts += game.getAwayPassAttempts();
-				totalPoints += (game.getHomeScore() + game.getAwayScore());				
+				totalPoints += (game.getHomeScore() + game.getAwayScore());
 			}
 		}
 		averagePassAttempts = (double) totalPassAttempts / (double) totalPoints;
@@ -252,7 +257,7 @@ public class TeamStats {
 	public double getAverageGapTime() {
 		return averageGapTime;
 	}
-	
+
 	public double getAveragePointDifferential() {
 		if (averagePointDifferential == Double.NaN)
 			return averagePointDifferential;
@@ -264,8 +269,7 @@ public class TeamStats {
 			if (game.getHomeTeam().equals(teamId)) {
 				pointDiffTotal += game.getHomeScore() - game.getAwayScore();
 				gameCounter++;
-			}
-			else if (game.getAwayTeam().equals(teamId)) {
+			} else if (game.getAwayTeam().equals(teamId)) {
 				pointDiffTotal += game.getAwayScore() - game.getHomeScore();
 				gameCounter++;
 			}
