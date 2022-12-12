@@ -194,7 +194,7 @@ public class Records {
 
 	}
 
-	public static void loadRawData() throws IOException, NumberFormatException, BadEnumException, ParseException {
+	public static void loadRawData() throws IOException, NumberFormatException, BadEnumException, ParseException, ValueException {
 		// add teams
 		try (BufferedReader br = new BufferedReader(new FileReader("../appDataRaw.csv"))) {
 			String line;

@@ -52,8 +52,7 @@ public class Main {
 	private static final Logger logger = LogManager.getLogger(Main.class);
 	private static final Ratios mainRatios = new Ratios();
 
-	public static void main(String[] args) throws IOException, WrongSizeRowException, BadEnumException,
-			NumberFormatException, ParseException, BadMapException, ValueException {
+	public static void main(String[] args) throws Exception {
 		TeamTable.createMap();
 		Records.loadGames();
 		Records.loadAudlGameEvents();
@@ -180,27 +179,40 @@ public class Main {
 			game.countPassAttempts();
 			game.countScoresAgainstMan();
 		}
-		
+
 		for (Team team : Records.getTeamRecords()) {
-			team.calculateAveragePassAttemptsPerPointEachSeason();
-			team.calculateAveragePassRatioAgainstManEachSeason();
+			team.calculationsForEachSeason();
 		}
-		
 
 		LinkedList<String[]> teamCSVData = new LinkedList<>();
-		teamCSVData.add(new String[] { "Team name", "Year", "Rating", "Ranking", "# Wins", "PPG", "PPG Against", "Pass Attempts", "Man Pass Ratio" });
+		teamCSVData.add(new String[] { "Team name", "Year", "Average pt differential", "W/L ratio", "Ranking", "# Wins",
+				"PPG", "PPG Against", "Pass Attempts", "Man Pass Ratio", "Completions per Game",
+				"Average time between passes", "Average distance thrown", "Average angle thrown"});
 
 		for (TeamStats teamStat : rankedTeamStats) {
 			teamCSVData.add(new String[] { teamStat.getTeamId(), String.valueOf(teamStat.getYear()),
+					(teamStat.getAveragePointDifferential() != Double.NaN
+							? String.valueOf(teamStat.getAveragePointDifferential())
+							: ""),
 					String.valueOf(teamStat.getTeamSeasonRating()), String.valueOf(teamStat.getSeasonRanking()),
 					String.valueOf(teamStat.getWins()), String.valueOf(teamStat.getAveragePPG()),
-					String.valueOf(teamStat.getAveragePPGAgainst()),
-					String.valueOf(teamStat.getAveragePassAttempts()),
-					String.valueOf(teamStat.getManPassRatio())});
+					printIfPositive(teamStat.getAveragePPGAgainst()),
+					printIfPositive(teamStat.getAveragePassAttempts()),
+					printIfPositive(teamStat.getManPassRatio()),
+					printIfPositive(teamStat.getCompletionsPerGame()),
+					printIfPositive(teamStat.getAverageGapTime()),
+					printIfPositive(teamStat.getAverageDistanceThrown()),
+					printIfPositive(teamStat.getAverageThrowAngle())});
 		}
 		exportToCsv(teamCSVData, "team_results_");
 	}
 
+	private static String printIfPositive(Double value) {
+		if (value > 0)
+			return String.valueOf(value);
+		else
+			return "";
+	}
 	private static void exportToCsv(LinkedList<String[]> csvContent, String filename) {
 		// default all fields are enclosed in double quotes
 		// default separator is a comma
@@ -248,7 +260,7 @@ public class Main {
 				+ ", ratio: " + mainRatios.offenseScoreRatio);
 	}
 
-	private static LinkedList<TeamStats> orderSeasonsByRank() {
+	private static LinkedList<TeamStats> orderSeasonsByRank() throws Exception {
 		LinkedList<TeamStats> statList = new LinkedList<>();
 		for (Team team : Records.getTeamRecords()) {
 			boolean statAdded = false;
@@ -256,9 +268,12 @@ public class Main {
 				// iterate already ordered list
 				for (int i = 0; i < statList.size(); i++) {
 					TeamStats currentStat = statList.get(i);
-					if (listTeamStat.getTeamSeasonRating() > currentStat.getTeamSeasonRating()
-							|| (listTeamStat.getTeamSeasonRating() == currentStat.getTeamSeasonRating()
-									&& listTeamStat.getWins() > currentStat.getWins())) {
+					if (listTeamStat.getAveragePointDifferential() == Double.NaN)
+						throw new Exception("no differential found for " + Integer.toString(listTeamStat.getYear())
+								+ ": " + listTeamStat.getTeamId());
+					if (listTeamStat.getAveragePointDifferential() > currentStat.getAveragePointDifferential()
+							|| (listTeamStat.getAveragePointDifferential() == currentStat.getAveragePointDifferential()
+									&& listTeamStat.getTeamSeasonRating() > currentStat.getTeamSeasonRating())) {
 						statList.add(i, listTeamStat);
 						statAdded = true;
 						break;

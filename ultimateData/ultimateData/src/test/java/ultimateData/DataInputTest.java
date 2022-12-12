@@ -30,6 +30,7 @@ import enums.RawDataEnums;
 import enums.RawDataEnums.DefenseScheme;
 import exceptions.BadEnumException;
 import exceptions.BadMapException;
+import exceptions.ValueException;
 import exceptions.WrongSizeRowException;
 import parser.StringConverters;
 
@@ -262,7 +263,7 @@ public class DataInputTest {
 
 	//682
 	@Test
-	public void testRawData() throws NumberFormatException, BadEnumException, ParseException {
+	public void testRawData() throws NumberFormatException, BadEnumException, ParseException, ValueException {
 		String sampleString = "8/20/21: Empire vs. Glory,Empire,Glory,High School,7,5,Left,Q1,0:00:00,Zone,Empire,Turnover,11,0.800728463,0.682992254,27,0.151269003,0.810201943,NA,none,none,Unmarked/Not Covered,Backhand,none,none,Blocked Pass,Interception,none,8/20/2021,77.1,2.6,7,0.04,Glory,jwilliams,bjagt,ocable,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,ocable,NA,NA,NA,NA,NA,NA,NA,NA,NA,bjagt,jwilliams,bkatz1,rweaver,jlithio,jbabbitt,rosgar,thalkyard,bmccann,jkurmanfa,ocable,nthompson,cbartoli,adonadio,New York,1,No,2,2,1,19,13,0,0,25,21,W,3,0:00:00,3,2160,0,0-5 sec,135,1,O-Line,D-Line,O-Line,D-Line,Home,35.6996958,41.99021421,5.902644686,79.53013435,74.09735531,0.469865646,9.033029138,15.32354754,6.290518404,73.62748967,6.290518404,73.62748967,Downfield,18.24239737,-0.987006296,NA,80.9870063,0,0,1,1,0,0,0,1,none,None,None,,85.11667427,0,TRUE,FALSE,FALSE,Zone";
 		String[] values = sampleString.split(",");
 		RawData rawData = StringConverters.convertToRawData(values);
@@ -361,7 +362,7 @@ public class DataInputTest {
 	}
 
 	@Test
-	public void testRawDataLine164() throws NumberFormatException, BadEnumException, ParseException {
+	public void testRawDataLine164() throws NumberFormatException, BadEnumException, ParseException, ValueException {
 		String sampleString = "7/24/21: Outlaws vs. Rush,Outlaws,Rush,CFL,9,8,none,Q2,0:10:49,none,Rush,Pull Received,29,0.143718773,0.444617501,27,0.785775253,0.474521303,N/S (gap in video),Normal/In-Bounds,none,none,none,none,none,none,none,none,7/24/2021,NA,NA,NA,NA,Outlaws,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,cturner,nhirst,NA,NA,NA,NA,NA,NA,khunter,mobrien,badibe,brobinson,cturner,rtoogood,dbenvenut,acarroll,lcomire,mmackenzi,nhirst,jhuynh,dlafrance,wlewis,Ottawa,NA,Yes,1,-1,0,23,19,1,1,17,13,W,6,0:10:49,14,2089,649,30+ sec,11,0,O-Line,D-Line,D-Line,O-Line,Away,29.42126773,27.94252489,-0.345860792,67.48256974,70.34586079,2.51743026,2.754601068,1.275858221,1.478742847,67.82843053,-1.478742847,67.82843053,Downfield,25.39080845,6.648878611,1.269191554,63.35112139,NA,0,0,0,0,0,0,0,none,NA,None Right Straight-Up,Right Straight-Up,-88.75107969,NA,FALSE,FALSE,TRUE,Person";
 		String[] values = sampleString.split(",");
 		RawData rawData = StringConverters.convertToRawData(values);

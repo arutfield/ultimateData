@@ -78,7 +78,7 @@ public class RawData {
 		return gameInfo.quarter;
 	}
 
-	public Short getGameClockSeconds() {
+	public Double getGameClockSeconds() {
 		return gameInfo.gameClockSeconds;
 	}
 
@@ -266,7 +266,7 @@ public class RawData {
 		return component2.homeTeamGameOutcome;
 	}
 
-	public Short getGameClockEstimate() {
+	public Double getGameClockEstimate() {
 		return component2.gameClockEstimate;
 	}
 

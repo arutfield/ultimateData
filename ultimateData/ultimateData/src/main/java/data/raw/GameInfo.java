@@ -15,10 +15,10 @@ public class GameInfo{
 	final Short awayScore;
 	final RawDataEnums.OffenseDirection offenseDirection;
 	final QuarterEnum quarter;
-	final Short gameClockSeconds;
+	final Double gameClockSeconds;
 
 	public GameInfo(String gameTitle, String homeTeamId, String awayTeamId, FieldType fieldType, Short homeScore,
-			Short awayScore, OffenseDirection offenseDirection, QuarterEnum quarter, Short gameClockSeconds) {
+			Short awayScore, OffenseDirection offenseDirection, QuarterEnum quarter, Double gameClockSeconds) {
 		this.gameTitle = gameTitle;
 		String[] splitBySlash = gameTitle.split("/");
 		String[] splitByColon = splitBySlash[2].split(":");

@@ -2,6 +2,8 @@ package data;
 
 import java.util.LinkedList;
 
+import exceptions.ValueException;
+
 public class Team {
 	private final String teamId;
 	private final LinkedList<TeamStats> teamStats = new LinkedList<>();
@@ -22,17 +24,14 @@ public class Team {
 		teamStats.add(teamStat);
 	}
 	
-	public void calculateAveragePassAttemptsPerPointEachSeason() {
+	public void calculationsForEachSeason() throws ValueException {
 		for (TeamStats teamStat : teamStats) {
 			teamStat.calculateAveragePassAttemptsPerPoint();
+			teamStat.calculateAverageTimeBetweenPasses();
+			teamStat.calculateAveragePassRatioAgainstManPerPoint();
+			teamStat.calculateThrowStatistics();
 		}
 	}
 
-	public void calculateAveragePassRatioAgainstManEachSeason() {
-		for (TeamStats teamStat : teamStats) {
-			teamStat.calculateAveragePassRatioAgainstManPerPoint();
-		}
-		
-	}
 
 }

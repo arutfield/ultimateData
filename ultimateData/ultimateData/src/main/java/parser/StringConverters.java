@@ -43,6 +43,7 @@ import enums.RawDataEnums.TurnoverType;
 import enums.RawDataEnums.YesNoNA;
 import exceptions.BadEnumException;
 import exceptions.BadMapException;
+import exceptions.ValueException;
 import exceptions.WrongSizeRowException;
 import jdk.internal.jline.internal.Log;
 
@@ -340,9 +341,9 @@ public class StringConverters {
 				Short.valueOf(values[TeamStatsEnum.divStanding.value]));
 	}
 
-	public static RawData convertToRawData(String[] values) throws NumberFormatException, BadEnumException, ParseException {
+	public static RawData convertToRawData(String[] values) throws NumberFormatException, BadEnumException, ParseException, ValueException {
 		String gameClock = values[8];
-		Short gameClockSeconds = convertTimeStringToSeconds(gameClock);
+		Double gameClockSeconds = convertTimeStringToSeconds(gameClock);
 
 		Coordinate location1 = new Coordinate(parseDoubleWithNA(values[13]), parseDoubleWithNA(values[14]));
 		Coordinate location2 = new Coordinate(parseDoubleWithNA(values[16]), parseDoubleWithNA(values[17]));
@@ -466,13 +467,16 @@ public class StringConverters {
 				gameDate, weather, values[33].toLowerCase(), values[34], values[35], defenders, markers, poachers,
 				deflectors, values[51], values[52], values[53], dFoulers, values[57],
 				values[58]);
+		Double durationClock = convertTimeStringToSeconds(values[87]);
+		if (durationClock == null && !values[87].equals("NA"))
+			throw new ValueException(values[87]);
 		data.raw.Component2 component2 = new data.raw.Component2(homePlayers, awayPlayers, values[73], values[75].equals("Yes"),
 				Short.valueOf(values[76]),
 				Short.valueOf(values[77]), RawDataEnums.YesNoNA.convertToEnum(values[78]), Short.parseShort(values[79]),
 				Short.parseShort(values[80]), RawDataEnums.TeamScored.convertToEnum(values[81]),
 				RawDataEnums.YesNoNA.convertToEnum(values[82]), Short.parseShort(values[83]),
 				Short.parseShort(values[84]), RawDataEnums.HomeTeamOutcome.convertToEnum(values[85]),
-				parseDoubleWithNA(values[86]), convertTimeStringToSeconds(values[87]), Short.valueOf(values[88]),
+				parseDoubleWithNA(values[86]), durationClock, Short.valueOf(values[88]),
 				parseDoubleWithNA(values[89]), 
 				parseDoubleWithNA(values[90]),
 				RawDataEnums.QGroupTimeRemaining.convertToEnum(values[91]),
@@ -526,14 +530,27 @@ public class StringConverters {
 
 	}
 	
-	private static Short convertTimeStringToSeconds(String timeString) {
+	private static Double convertTimeStringToSeconds(String timeString) {
 		String[] splitByColon = timeString.split(":");
-		try {
-		return (short) (Short.valueOf(splitByColon[0]) * 3600
-				+ Short.valueOf(splitByColon[1]) * 60 + Short.valueOf(splitByColon[2]));
-		} catch(NumberFormatException ex) {
-			logger.warn("Unable to parse " + timeString + " into clock");
+		if (timeString.equals("NA"))
 			return null;
+		String onesPlace = splitByColon[splitByColon.length-1];
+		String msPlace = "";
+		if (timeString.contains(".")) {
+			System.out.println(timeString + " has dot");
+			String lastWord = splitByColon[splitByColon.length - 1];
+			String[] splitByDot = lastWord.split("\\.");
+			onesPlace = splitByDot[0];
+			splitByColon[0] = onesPlace;
+			msPlace = splitByDot[1];
 		}
+		Double actualValue = 0.0;
+		for (int i=splitByColon.length-1; i>-1; i--) {
+			actualValue = (actualValue + (Double.valueOf(splitByColon[splitByColon.length-i-1]) * Math.pow(60, i))); 
+		}
+		if (msPlace.length() > 0) {
+			actualValue += Double.valueOf(msPlace) / (double) (msPlace.length());
+		}
+		return actualValue;
 	}
 }

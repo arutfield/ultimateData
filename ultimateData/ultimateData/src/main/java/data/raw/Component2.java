@@ -5,6 +5,7 @@ import enums.RawDataEnums.HomeTeamOutcome;
 import enums.RawDataEnums.QGroupTimeRemaining;
 import enums.RawDataEnums.TeamScored;
 import enums.RawDataEnums.YesNoNA;
+import exceptions.ValueException;
 
 public class Component2 {
 	final String[] homePlayerIds;
@@ -22,7 +23,7 @@ public class Component2 {
 	final Short awayScoreEndofGame;
 	final RawDataEnums.HomeTeamOutcome homeTeamGameOutcome;
 	final Double durationEventEstimate;
-	final Short gameClockEstimate;
+	final Double gameClockEstimate;
 	final Short durationPointEstimate;
 	final Double timeRemainingRegularGame;
 	final Double timeRemainingQuarter;
@@ -34,9 +35,9 @@ public class Component2 {
 			Short homeAwayDifferential, Short offenseDefenseDifferential, RawDataEnums.YesNoNA regulationDone,
 			Short possessionNumber, Short pointNumber, TeamScored teamScoredOnPoint, YesNoNA teamScoredOnPossession,
 			Short homeScoreEndofGame, Short awayScoreEndofGame, HomeTeamOutcome homeTeamGameOutcome,
-			Double durationEventEstimate, Short gameClockEstimate, Short durationPointEstimate, Double timeRemainingRegularGame,
+			Double durationEventEstimate, Double gameClockEstimate, Short durationPointEstimate, Double timeRemainingRegularGame,
 			Double timeRemainingQuarter, QGroupTimeRemaining timeRemainingQGroup, Short numberThrowOfQuarter,
-			YesNoNA lastThrowOfQuarter) {
+			YesNoNA lastThrowOfQuarter) throws ValueException {
 		this.homePlayerIds = homePlayerIds;
 		this.awayPlayerIds = awayPlayerIds;
 		this.homeTeamLocation = homeTeamLocation;

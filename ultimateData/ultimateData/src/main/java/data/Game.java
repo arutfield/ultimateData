@@ -36,6 +36,8 @@ public class Game {
 	private int totalPassesAway = 0;
 	private int totalPassesHomeMan = 0;
 	private int totalPassesAwayMan = 0;
+	private int successfulPassesHome = 0;
+	private int successfulPassesAway = 0;
 
 	
 	public Game(String id) {
@@ -175,8 +177,12 @@ public class Game {
 			if (isPassingEvent) {
 				if (event.getOffenseTeam().equals(homeTeam)) {
 					homePassAttempts++;
+					if (event.getEventType() == EventTypeEnum.Goal || event.getEventType() == EventTypeEnum.Pass || event.getEventType() == EventTypeEnum.ScoreByOpposingTeam)
+						successfulPassesHome++;
 				} else if (event.getOffenseTeam().equals(awayTeam)) {
 					awayPassAttempts++;
+					if (event.getEventType() == EventTypeEnum.Goal || event.getEventType() == EventTypeEnum.Pass || event.getEventType() == EventTypeEnum.ScoreByOpposingTeam)
+						successfulPassesAway++;
 				}
 			}
 		}
@@ -190,13 +196,19 @@ public class Game {
 		return year;
 	}
 	
+	public int getSuccessfulPassesHome() {
+		return successfulPassesHome;
+	}
+
+	public int getSuccessfulPassesAway() {
+		return successfulPassesAway;
+	}
+
+	
 	public void countScoresAgainstMan() {
 		for (RawData rawData : Records.getRawDataRecords()) {
 			if (!rawData.getGameDate().equals(currentDate))
 				continue;
-			System.out.println("teams we found away: " + rawData.getAwayTeamId() + " , home: " + rawData.getHomeTeamId());
-			System.out.println("teams we want away: " + awayTeam + " , home: " + homeTeam);
-			System.out.println("date we're checking " + rawData.getGameDate().toString() + ", " + currentDate.toString());
 			if (rawData.getHomeTeamId().equals(homeTeam) && rawData.getAwayTeamId().equals(awayTeam)) {
 				if (rawData.getEventType() == RawDataEnums.EventType.completedPass) {
 					if (rawData.getOffenseHome() == RawDataEnums.YesNoNA.Yes) {
