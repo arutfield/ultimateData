@@ -24,6 +24,10 @@ public class Team {
 		teamStats.add(teamStat);
 	}
 	
+	/**
+	 * perform calculations needed at the season level
+	 * @throws ValueException error
+	 */
 	public void calculationsForEachSeason() throws ValueException {
 		for (TeamStats teamStat : teamStats) {
 			teamStat.calculateAveragePassAttemptsPerPoint();

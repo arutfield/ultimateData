@@ -53,6 +53,7 @@ public class Main {
 	private static final Ratios mainRatios = new Ratios();
 
 	public static void main(String[] args) throws Exception {
+		//read in and store all data
 		TeamTable.createMap();
 		Records.loadGames();
 		Records.loadAudlGameEvents();
@@ -81,7 +82,7 @@ public class Main {
 					+ game.getHomeScore() + " to " + game.getAwayScore());
 		}
 
-		// rearrange players by o ratio
+		// rearrange players by overall ratio
 		LinkedList<PlayerSeason> playerSeasonsSortedOverall = new LinkedList<>();
 		for (Player player : Records.getPlayerRecords()) {
 			for (PlayerSeason playerSeason : player.getPlayerSeasonList()) {
@@ -107,6 +108,7 @@ public class Main {
 
 		calculateScoringRatios();
 
+		//top of player csv shows some raw statistics about scoring
 		LinkedList<String[]> csvData = new LinkedList<>();
 		csvData.add(new String[] { "Total scores:", Integer.toString(mainRatios.countTotalScores), "O scores: ",
 				Integer.toString(mainRatios.countOLineScores), "ratio: ",
@@ -122,6 +124,8 @@ public class Main {
 				Double.toString(((double) mainRatios.homeDLineScoresCount) / (double) mainRatios.countTotalScores) });
 		csvData.add(new String[] { "D Away scores ratio",
 				Double.toString(((double) mainRatios.awayDLineScoresCount) / (double) mainRatios.countTotalScores) });
+		
+		//set up headers for CSV and then dump the player season information
 		csvData.add(new String[] { "Player ID", "team ID", "year", "overallRatio", "oPointsRatio", "dPointsRatio",
 				"oPointsPlayed", "dPointsPlayed", "Percent Offense", "Average throw distance",
 				"Average receive distance", "Average Throw Angle", "Average Receive Angle", "Throw Throwaway Rate",
@@ -173,17 +177,19 @@ public class Main {
 
 		exportToCsv(csvData, "player_results_");
 
+		//start looking at teams and perform appropriate calculations
 		LinkedList<TeamStats> rankedTeamStats = orderSeasonsByRank();
 		calculatePPGs();
 		for (Game game : Records.getGameRecords()) {
 			game.countPassAttempts();
-			game.countScoresAgainstMan();
+			game.countPassesAgainstMan();
 		}
 
 		for (Team team : Records.getTeamRecords()) {
 			team.calculationsForEachSeason();
 		}
 
+		//dump to CSV
 		LinkedList<String[]> teamCSVData = new LinkedList<>();
 		teamCSVData.add(new String[] { "Team name", "Year", "Average pt differential", "W/L ratio", "Ranking", "# Wins",
 				"PPG", "PPG Against", "Pass Attempts", "Man Pass Ratio", "Completions per Game",
@@ -213,6 +219,12 @@ public class Main {
 		else
 			return "";
 	}
+	
+	
+	/** export content to csv file
+	 * @param csvContent content to dump
+	 * @param filename name of file to dump into
+	 */
 	private static void exportToCsv(LinkedList<String[]> csvContent, String filename) {
 		// default all fields are enclosed in double quotes
 		// default separator is a comma
@@ -226,10 +238,12 @@ public class Main {
 				attemptsMade++;
 			}
 		}
-		System.out.println("DONE");
 
 	}
 
+	/** Calculate percentage of points where home scores and team starting on offense scores
+	 * @throws IOException error
+	 */
 	private static void calculateScoringRatios() throws IOException {
 		for (RawData rawData : Records.getRawDataRecords()) {
 			if (rawData.getScoringPass() == RawDataEnums.YesNoNA.Yes) {
@@ -260,6 +274,11 @@ public class Main {
 				+ ", ratio: " + mainRatios.offenseScoreRatio);
 	}
 
+	
+	/** Order the teams' seasons by how well they did
+	 * @return list of seasons
+	 * @throws Exception error
+	 */
 	private static LinkedList<TeamStats> orderSeasonsByRank() throws Exception {
 		LinkedList<TeamStats> statList = new LinkedList<>();
 		for (Team team : Records.getTeamRecords()) {
@@ -268,9 +287,10 @@ public class Main {
 				// iterate already ordered list
 				for (int i = 0; i < statList.size(); i++) {
 					TeamStats currentStat = statList.get(i);
-					if (listTeamStat.getAveragePointDifferential() == Double.NaN)
-						throw new Exception("no differential found for " + Integer.toString(listTeamStat.getYear())
-								+ ": " + listTeamStat.getTeamId());
+					//System.out.println("current team " + listTeamStat.getTeamId() + ", " + listTeamStat.getYear());
+					if (Double.isNaN(listTeamStat.getAveragePointDifferential())) {
+						continue;
+					}
 					if (listTeamStat.getAveragePointDifferential() > currentStat.getAveragePointDifferential()
 							|| (listTeamStat.getAveragePointDifferential() == currentStat.getAveragePointDifferential()
 									&& listTeamStat.getTeamSeasonRating() > currentStat.getTeamSeasonRating())) {
@@ -291,6 +311,9 @@ public class Main {
 		return statList;
 	}
 
+	/**
+	 * calculate average number of points each team scored per game
+	 */
 	private static void calculatePPGs() {
 		for (Game game : Records.getGameRecords()) {
 			int year = game.getYear();

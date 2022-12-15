@@ -94,6 +94,14 @@ public class StringConverters {
 	static final int playerGameLength = 43;
 	static final short gameDetailLength = 7;
 
+	/** convert values read in by csv to an Event instance
+	 * @param values read in
+	 * @return Event created
+	 * @throws WrongSizeRowException error
+	 * @throws BadEnumException error
+	 * @throws NumberFormatException error
+	 * @throws BadMapException error
+	 */
 	public static Event convertToEvent(String[] values) throws WrongSizeRowException, BadEnumException, NumberFormatException, BadMapException {
 		if (values.length != gameEventLength)
 			throw new WrongSizeRowException(gameEventLength, values.length);
@@ -162,6 +170,12 @@ public class StringConverters {
 				Short.valueOf(values[GameEventEnum.index.value]));
 	}
 
+	/** convert values from CSV to a PlayerGame instance
+	 * @param values read in
+	 * @return PlayerGame instance created
+	 * @throws WrongSizeRowException error
+	 * @throws BadEnumException error
+	 */
 	public static PlayerGame convertToPlayerGame(String[] values) throws WrongSizeRowException, BadEnumException {
 		if (values.length != playerGameLength)
 			throw new WrongSizeRowException(gameEventLength, values.length);
@@ -235,6 +249,13 @@ public class StringConverters {
 
 	}
 
+	/** convert values from CSV into GameDetails instance
+	 * @param values read in
+	 * @return GameDetails instance created
+	 * @throws WrongSizeRowException error
+	 * @throws NumberFormatException error
+	 * @throws ParseException error
+	 */
 	public static GameDetails convertToGameDetails(String[] values)
 			throws WrongSizeRowException, NumberFormatException, ParseException {
 		if (values.length != gameDetailLength)
@@ -286,6 +307,10 @@ public class StringConverters {
 		}
 	}
 
+	/** convert values from CSV into a PlayerSeason instance
+	 * @param values from csv
+	 * @return PlayerSeason instance
+	 */
 	public static PlayerSeason convertToPlayerSeason(String[] values) {
 		return new PlayerSeason(values[PlayerSeasonEnum.playerID.value], Short.parseShort(values[PlayerSeasonEnum.year.value]),
 				values[PlayerSeasonEnum.teamID.value], Short.parseShort(values[PlayerSeasonEnum.games.value]),
@@ -334,6 +359,10 @@ public class StringConverters {
 		}
 	}
 
+	/** convert values from CSV to TeamStats instance
+	 * @param values read from csv
+	 * @return TeamStats instance created
+	 */
 	public static TeamStats convertToTeamStats(String[] values) {
 		return new TeamStats(values[TeamStatsEnum.teamId.value], Short.valueOf(values[TeamStatsEnum.year.value]), values[TeamStatsEnum.divisionId.value],
 				Short.valueOf(values[TeamStatsEnum.wins.value]), Short.valueOf(values[TeamStatsEnum.losses.value]),
@@ -341,12 +370,23 @@ public class StringConverters {
 				Short.valueOf(values[TeamStatsEnum.divStanding.value]));
 	}
 
+	/**
+	 * convert read in csv values to an instance of RawData
+	 * @param values read in 
+	 * @return RawData instance created
+	 * @throws NumberFormatException error
+	 * @throws BadEnumException error
+	 * @throws ParseException error
+	 * @throws ValueException error
+	 */
 	public static RawData convertToRawData(String[] values) throws NumberFormatException, BadEnumException, ParseException, ValueException {
 		String gameClock = values[8];
 		Double gameClockSeconds = convertTimeStringToSeconds(gameClock);
 
 		Coordinate location1 = new Coordinate(parseDoubleWithNA(values[13]), parseDoubleWithNA(values[14]));
 		Coordinate location2 = new Coordinate(parseDoubleWithNA(values[16]), parseDoubleWithNA(values[17]));
+		
+		//format date correctly
 		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
 		String dateString = values[28];
 		String[] dateValues = dateString.split("/");
@@ -363,9 +403,11 @@ public class StringConverters {
 			}
 		}
 		Date gameDate = formatter.parse(updatedDateString);
+		
 		data.raw.Weather weather = new data.raw.Weather(parseDoubleWithNA(values[29]), parseDoubleWithNA(values[30]), parseDoubleWithNA(values[31]), parseDoubleWithNA(values[32]),
 				RawDataEnums.YesNoNA.convertToEnum(values[74]));
 
+		//handle lists
 		LinkedList<String> defenders = new LinkedList<>();
 
 		for (short defendersValue = 36; defendersValue < 42; defendersValue++) {
@@ -452,6 +494,8 @@ public class StringConverters {
 				mainForcePossessionDirection.add(forceDirection);
 		}
 		
+		//separated into sections to make implementation easier to troubleshoot: gameInfo, component0, component1, component2
+		//component3, component4
 		data.raw.GameInfo gameInfo = new data.raw.GameInfo(values[0], values[1].toLowerCase(), values[2].toLowerCase(),
 				RawDataEnums.FieldType.convertToEnum(values[3]), Short.valueOf(values[4]), Short.valueOf(values[5]),
 				RawDataEnums.OffenseDirection.convertToEnum(values[6]), QuarterEnum.convertFromString(values[7]),
@@ -537,7 +581,6 @@ public class StringConverters {
 		String onesPlace = splitByColon[splitByColon.length-1];
 		String msPlace = "";
 		if (timeString.contains(".")) {
-			System.out.println(timeString + " has dot");
 			String lastWord = splitByColon[splitByColon.length - 1];
 			String[] splitByDot = lastWord.split("\\.");
 			onesPlace = splitByDot[0];

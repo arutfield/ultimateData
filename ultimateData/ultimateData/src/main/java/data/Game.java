@@ -110,6 +110,11 @@ public class Game {
 		this.week = week;
 	}
 
+	/**
+	 * add game details to list
+	 * @param gameDetails to add
+	 * @throws ValueException error
+	 */
 	public void addDetails(GameDetails gameDetails) throws ValueException {
 		if (this.awayTeam != null && !gameDetails.getAwayTeam().equals(awayTeam)) {
 			throw new ValueException("away team", awayTeam, gameDetails.getAwayTeam());
@@ -165,6 +170,9 @@ public class Game {
 	}
 	
 	
+	/**
+	 * count pass attempts team made
+	 */
 	public void countPassAttempts() {
 		for (Event event : getEvents()) {
 			boolean isPassingEvent = false;
@@ -175,6 +183,7 @@ public class Game {
 				}
 			}
 			if (isPassingEvent) {
+				//if it's an event where a pass was made, figure out if this team was home or away, and if it was successful
 				if (event.getOffenseTeam().equals(homeTeam)) {
 					homePassAttempts++;
 					if (event.getEventType() == EventTypeEnum.Goal || event.getEventType() == EventTypeEnum.Pass || event.getEventType() == EventTypeEnum.ScoreByOpposingTeam)
@@ -205,7 +214,10 @@ public class Game {
 	}
 
 	
-	public void countScoresAgainstMan() {
+	/**
+	 * count passes completed against man
+	 */
+	public void countPassesAgainstMan() {
 		for (RawData rawData : Records.getRawDataRecords()) {
 			if (!rawData.getGameDate().equals(currentDate))
 				continue;

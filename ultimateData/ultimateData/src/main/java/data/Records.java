@@ -28,6 +28,15 @@ public class Records {
 	private static final LinkedList<Team> teamRecords = new LinkedList<Team>();
 	private static final LinkedList<RawData> rawDataRecords = new LinkedList<RawData>();
 
+	/**
+	 * load events from file
+	 * @throws WrongSizeRowException error
+	 * @throws BadEnumException error
+	 * @throws FileNotFoundException error
+	 * @throws IOException error
+	 * @throws NumberFormatException error
+	 * @throws BadMapException error
+	 */
 	public static void loadAudlGameEvents()
 			throws WrongSizeRowException, BadEnumException, FileNotFoundException, IOException, NumberFormatException, BadMapException {
 		boolean seenHeaderLine = false;
@@ -35,6 +44,7 @@ public class Records {
 			String line;
 			while ((line = br.readLine()) != null) {
 				if (!seenHeaderLine) {
+					//skip first line
 					seenHeaderLine = true;
 					continue;
 				}
@@ -58,7 +68,13 @@ public class Records {
 		}
 	}
 
-	//add games to a player
+	/**
+	 * add games to a player
+	 * @throws FileNotFoundException error
+	 * @throws IOException error
+	 * @throws WrongSizeRowException error
+	 * @throws BadEnumException error
+	 */
 	public static void loadPlayerGameStatsAdvanced()
 			throws FileNotFoundException, IOException, WrongSizeRowException, BadEnumException {
 		boolean seenHeaderLinePlayer = false;
@@ -93,6 +109,15 @@ public class Records {
 
 	}
 
+	/**
+	 * load games into memory
+	 * @throws FileNotFoundException error
+	 * @throws IOException error
+	 * @throws NumberFormatException error
+	 * @throws WrongSizeRowException error
+	 * @throws ParseException error
+	 * @throws ValueException error
+	 */
 	public static void loadGames()
 			throws FileNotFoundException, IOException, NumberFormatException, WrongSizeRowException, ParseException, ValueException {
 		try (BufferedReader br = new BufferedReader(new FileReader("../games.csv"))) {
@@ -123,9 +148,13 @@ public class Records {
 				}
 			}
 		}
-		System.out.println("games found " + gameRecords.size());
 	}
 
+	/**
+	 * load in stats on each players' seasons
+	 * @throws FileNotFoundException error
+	 * @throws IOException error
+	 */
 	public static void loadPlayerSeasonStats() throws FileNotFoundException, IOException {
 		try (BufferedReader br = new BufferedReader(new FileReader("../playerseasonstats.csv"))) {
 			String line;
@@ -152,7 +181,6 @@ public class Records {
 				}
 				if (!playerFound) {
 					Player newPlayer = new Player(playerId);
-					logger.error("adding new player " + newPlayer.getPlayerId());
 					newPlayer.addSeason(playerSeason);
 					playerRecords.add(newPlayer);
 				}
@@ -161,6 +189,10 @@ public class Records {
 		
 	}
 	
+	/**
+	 * load team statistics
+	 * @throws IOException error
+	 */
 	public static void loadTeamStats() throws IOException {
 		// add teams
 		try (BufferedReader br = new BufferedReader(new FileReader("../teamStats.csv"))) {
@@ -194,6 +226,14 @@ public class Records {
 
 	}
 
+	/**
+	 * load in raw data
+	 * @throws IOException error
+	 * @throws NumberFormatException error
+	 * @throws BadEnumException error
+	 * @throws ParseException error
+	 * @throws ValueException error
+	 */
 	public static void loadRawData() throws IOException, NumberFormatException, BadEnumException, ParseException, ValueException {
 		// add teams
 		try (BufferedReader br = new BufferedReader(new FileReader("../appDataRaw.csv"))) {

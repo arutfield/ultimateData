@@ -77,6 +77,10 @@ public class Player {
 		
 	}
 	
+	/** 
+	 * check if a player was on multiple teams in one year
+	 * @return true if had multiple teams
+	 */
 	public boolean hasMultipleTeams() {
 		String firstTeam = "";
 		for (PlayerSeason season : playerSeasonList) {

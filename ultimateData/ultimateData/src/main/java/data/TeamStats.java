@@ -130,10 +130,15 @@ public class TeamStats {
 		return completionsPerGame;
 	}
 
+	/**
+	 * calculate statistics for throws for the team this season
+	 * @throws ValueException error
+	 */
 	public void calculateThrowStatistics() throws ValueException {
 		double totalDistanceThrown = 0.0;
 		int totalThrows = 0;
 
+		//throw distances
 		for (Game game : Records.getGameRecords()) {
 			if (game.getYear() != year)
 				continue;
@@ -148,6 +153,7 @@ public class TeamStats {
 			}
 		}
 
+		//throw angles
 		double totalThrowAngle = 0.0;
 		int totalThrowsForAngle = 0;
 		for (RawData rawData : Records.getRawDataRecords()) {
@@ -155,8 +161,6 @@ public class TeamStats {
 				continue;
 			if (rawData.getTeamId().equals(teamId)) {
 				totalThrowAngle += Math.abs(rawData.getThrowAngle());
-				System.out.println("total throw angle " + totalThrowAngle + ", " + Math.abs(rawData.getThrowAngle())
-						+ ", " + rawData.getThrowAngle());
 				totalThrowsForAngle++;
 			}
 		}
@@ -164,13 +168,15 @@ public class TeamStats {
 			this.averageDistanceThrown = (double) totalDistanceThrown / ((double) totalThrows);
 		if (totalThrowsForAngle != 0) {
 			this.averageThrowAngle = totalThrowAngle / ((double) totalThrowsForAngle);
-			System.out.println("average throw angle " + this.averageThrowAngle + " from total " + totalThrowsForAngle
-					+ " with throw angle total " + totalThrowAngle);
 		} else
 			this.averageThrowAngle = Double.NaN;
 
 	}
 
+	/**
+	 * calculate average time between passes
+	 * @throws ValueException error
+	 */
 	public void calculateAverageTimeBetweenPasses() throws ValueException {
 		int totalPassGaps = 0;
 		int totalPassGapTimes = 0;
@@ -185,6 +191,7 @@ public class TeamStats {
 			if (rawData.getEventType() == RawDataEnums.EventType.completedPass
 					|| rawData.getEventType() == RawDataEnums.EventType.PullReceived
 					|| rawData.getEventType() == RawDataEnums.EventType.Turnover) {
+				//is a pass, though not necessarily successful
 				if (rawData.getEventType() == RawDataEnums.EventType.completedPass
 						|| rawData.getEventType() == RawDataEnums.EventType.PullReceived) {
 					// not a turnover
@@ -211,6 +218,9 @@ public class TeamStats {
 		averageGapTime = (double) totalPassGapTimes / (double) totalPassGaps;
 	}
 
+	/**
+	 * calculate the number of pass attempts per point on average
+	 */
 	public void calculateAveragePassAttemptsPerPoint() {
 		int totalPassAttempts = 0;
 		int totalPoints = 0;
@@ -229,6 +239,10 @@ public class TeamStats {
 		averagePassAttempts = (double) totalPassAttempts / (double) totalPoints;
 	}
 
+	/**
+	 * find the average number of passes made against man each point
+	 * divided by total passes
+	 */
 	public void calculateAveragePassRatioAgainstManPerPoint() {
 		int totalPassesAttempted = 0;
 		int totalManPasses = 0;
@@ -258,8 +272,13 @@ public class TeamStats {
 		return averageGapTime;
 	}
 
+	/**
+	 * calculate the average number of points the team got
+	 * minus the average number their opponent got
+	 * @return difference
+	 */
 	public double getAveragePointDifferential() {
-		if (averagePointDifferential == Double.NaN)
+		if (!Double.isNaN(averagePointDifferential))
 			return averagePointDifferential;
 		int pointDiffTotal = 0;
 		int gameCounter = 0;

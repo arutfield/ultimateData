@@ -389,11 +389,15 @@ public class PlayerSeason {
 		return percentInvolvedInDefensePerThrow;
 	}
 
+	/**
+	 * calculate statistics that couldn't be found during construction
+	 */
 	public void calculatePostSeasonStatistics() {
 		double totalDistanceThrown = 0.0;
 		double totalDistanceReceived = 0.0;
 		int totalThrows = 0;
 		int totalReceives = 0;
+		//count throws made and received and keep track of the distance
 		for (Game game : Records.getGameRecords()) {
 			if (game.getYear() != year)
 				continue;
@@ -413,6 +417,8 @@ public class PlayerSeason {
 			}
 		}
 
+		//count throws made and received and keep track of angle
+		//also count times they were involved in stopping offense
 		double totalThrowAngle = 0.0;
 		double totalReceivesAngle = 0.0;
 		int totalThrowsForAngle = 0;
@@ -449,6 +455,7 @@ public class PlayerSeason {
 				}
 			}
 		}
+		//calculate averages
 		if (this.throwAttempts != 0)
 			this.averageDistanceThrown = totalDistanceThrown / ((double) totalThrows);
 		if (totalReceives != 0)

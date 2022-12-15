@@ -190,7 +190,6 @@ public class Event {
 
 
 	public Object getOffenseTeam() {
-		// TODO Auto-generated method stub
 		return this.offenseTeam;
 	}
 	
